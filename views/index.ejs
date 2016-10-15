@@ -1,0 +1,31 @@
+<html>
+<head>
+    <title>Chat</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div class="container">
+		<header>
+		</header>
+		<table id='qipan' cellpadding="0" cellspacing="0">
+		</table>
+		<div id='status'></div>
+	</div>
+	<script type="text/javascript">
+		var size=20;
+		var tb=$('#qipan'); 
+		var tbContent="";
+		for(var i=0;i<size;i++) { 
+			 tbContent+='<tr>';
+			     for(var j=0;j<size;j++){ 
+			    	   tbContent+='<td></td>';
+			    	} 
+			 tbContent+='</tr>';
+	     }
+		tb.append(tbContent); 
+	</script>
+</body>
+</html>
