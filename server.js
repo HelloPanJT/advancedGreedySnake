@@ -12,6 +12,10 @@ var time={};
 var rowMove=[-1,0,1];
 var colMove=[-1,0,1];
 var wholeMove=[[1,0],[-1,0],[0,1],[0,-1]];
+
+var msgCollection = "Messages";
+
+//pos(int) first pos random
 function createSnake(len,snake,pos,allSnakes){
 	if(len==0)
 		return true;
@@ -23,7 +27,7 @@ function createSnake(len,snake,pos,allSnakes){
 		console.log(pos);
 		var col=pos%size;
 		var row=Math.floor(pos/size);
-		if((col!=size-1&&createSnake(len-1,snake,pos+1,allSnakes))||(col!=0&&createSnake(len-1,snake,pos-1,allSnakes))||(row!=size-1&&createSnake(len-1,snake,pos+size,allSnakes))||(row!=0&&createSnake(len-1,snake,pos-size,allSnakes))){
+		if((col!=size-1 && createSnake(len-1,snake,pos+1,allSnakes))||(col!=0&&createSnake(len-1,snake,pos-1,allSnakes))||(row!=size-1&&createSnake(len-1,snake,pos+size,allSnakes))||(row!=0&&createSnake(len-1,snake,pos-size,allSnakes))){
 			return true;
 		}
 		snake.pop();
@@ -64,7 +68,10 @@ MongoClient.connect(mongoURI,function(err,db){
 				app.use(express.static('public'));
 				app.set('view engine','ejs');
 				app.get('/',function(req,res){
-					res.render('index',{'size': size});
+					db.collection(msgCollection).find().toArray(
+						function(err, all_messages) {
+								res.render('index', {'messages': all_messages, 'size': size})
+					})
 				});
 				var server=app.listen(5001,function(){
 					console.log('listen on 5001');
@@ -102,8 +109,8 @@ MongoClient.connect(mongoURI,function(err,db){
 							io.sockets.emit('moveSnake',data);
 						})
 					})
-					
-					time=setTimeout(move,2000);		
+
+					time=setTimeout(move,2000);
 					socket.on('disconnect',function(){
 						console.log('disconnect');
 						clearTimeout(time);
@@ -210,4 +217,3 @@ var track=function(predator,preys,docs,collectName){
 
 
 // receive user command to move
-

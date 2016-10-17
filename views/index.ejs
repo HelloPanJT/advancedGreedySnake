@@ -63,21 +63,17 @@
           </table>
         </div>
         <div class="row">
-
           Chat Room:
-          <div class="panel panel-default">
-            <div class="panel-body">
-              <p>AAA: as</p>
-              <p>AAA: as</p>
-              <p>AAA: as</p>
-              <p>AAA: as</p>
-              <p>AAA: as</p>
-              <p>AAA: as</p>
+          <div class="pre-panel panel-default pre-scrollable">
+            <div id="chatroom" class="panel-body">
+              <% messages.forEach(function(msg){ %>
+                  <p> <%= msg.username %>  :  <%= msg.message %> </p>
+              <% }) %>
             </div>
           </div>
           <form class="form-inline">
             <input type="text" class="form-control" placeholder="Text input">
-            <button type="button" class="btn btn-info">Send</button>
+            <button type="button" id="send" class="btn btn-info">Send</button>
           </form>
         </div>
       </div>
