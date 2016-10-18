@@ -77,7 +77,20 @@ MongoClient.connect(mongoURI,function(err,db){
 					console.log('listen on 5001');
 				})
 				io=require('socket.io').listen(server);
-				io.sockets.on('connection',function(socket){
+				io.sockets.on('connection', function(socket) {
+					socket.on('setUsername', function(data) {
+          	socket.username = data;
+          })
+
+          socket.on('message', function (message) {
+            db.collection(msgCollection).find().toArray(
+              function(err, words) {
+                var data = { 'message' : message, 'username': socket.username };
+                socket.broadcast.emit('message', data);
+                db.collection(msgCollection).insert(data, function(err, ids){})
+            });
+          })
+
 					socket.on('createSnake',function(snakeInfo){
 						db.collection(collectName).find().toArray(function(err,allSnakes){
 							if(err){

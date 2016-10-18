@@ -1,7 +1,7 @@
 <html>
 <head>
     <title>Chat</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css">
@@ -52,9 +52,17 @@
         <div class="row">
           Status:
           <table class="table">
-            <tr>
+            <tr id="setUserNameRow">
+              <td>
+                <form class="form-inline">
+                  <input id="userNameText" type="text" class="form-control" placeholder="Input Username">
+                  <button id="setUserNameBtn" type="button" class="btn btn-info">SetUserName</button>
+                </form>
+              </td>
+            </tr>
+            <tr id="userNameRow">
               <td>Username:</td>
-              <td>Test</td>
+              <td id="username"></td>
             </tr>
             <tr>
               <td>Length:</td>
@@ -71,9 +79,9 @@
               <% }) %>
             </div>
           </div>
-          <form class="form-inline">
-            <input type="text" class="form-control" placeholder="Text input">
-            <button type="button" id="send" class="btn btn-info">Send</button>
+          <form id="sendMsgRow" class="form-inline">
+            <input id="msgText" type="text" class="form-control" placeholder="Text input">
+            <button id="sendMsgBtn" type="button" class="btn btn-info">Send</button>
           </form>
         </div>
       </div>
