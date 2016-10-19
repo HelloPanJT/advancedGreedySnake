@@ -19,7 +19,7 @@ var wholeMove=[[1,0],[-1,0],[0,1],[0,-1]];
 var allSnakes = {};
 var chessBoard = {};
 var boardParams = {"height": 40, "width": 60};
-var usedGrid = new Set();
+var gridOccupied = new Set(); //not include the food, only snake
 
 MongoClient.connect(mongoURI,function(err,db){
 	if(err)
@@ -111,38 +111,74 @@ MongoClient.connect(mongoURI,function(err,db){
 
 function initialSnake(username, io) {
 	var pos = getUnusedPlace();
-	usedGrid.add(pos);
+	gridOccupied.add(pos);
 	allSnakes.username = [pos];
-
-	io.sockets.emit('redraw', {"erase": [], "append": allSnakes, "color": "black"});
+	io.sockets.emit('redraw', {"erase": [], "append": Array.from(gridOccupied), "color": "black"});
 }
 
-function moveSnake(username, cmd) {
+function moveSnake(username, cmd, io) {
+	var nextPos = 0;
+	var snake = allSnakes.username;
+	var head = snake[snake.length-1];
 
+	if (cmd == "u") {
+		nextPos = head - boardParams.width;
+	} else if (cmd == "d") {
+		nextPos = head + boardParams.width;
+	} else if (cmd == "l") {
+		nextPos = head - 1;
+	} else {
+		nextPos = head + 1;
+	}
+	snake.push(nextPos);
+	var tail = snake.shift()
+	gridOccupied.delete(tail);
+
+	if (canMove(nextPos)) {
+		gridOccupied.add(nextPos);
+		io.sockets.emit('redraw', {"erase": [tail], "append": [nextPos], "color": "black"});
+	}
+	else {
+		delete snake;
+	}
 }
 
 function getUnusedPlace() {
 	while (true) {
 		var pos = getRandomInt(0, boardParams.width * boardParams.height - 1);
-		if ( !usedGrid.has(pos) &&
-			!usedGrid.has(pos - 1) &&
-			!usedGrid.has(pos + 1) &&
-			!usedGrid.has(pos + boardParams.height) &&
-			!usedGrid.has(pos - boardParams.height)
+		if ( !gridOccupied.has(pos) &&
+			!gridOccupied.has(pos - 1) &&
+			!gridOccupied.has(pos + 1) &&
+			!gridOccupied.has(pos + boardParams.height) &&
+			!gridOccupied.has(pos - boardParams.height)
 		) {
 			return pos;
 		}
 	}
 }
 
+function canMove(pos) {
+	var posXY = posToXY(pos);
+	if (
+		posXY.row < 0 ||
+		posXY.col < 0 ||
+		posXY.row >= boardParams.height ||
+		posXY.col >= boardParams.width ||
+		gridOccupied.includes(posXY)
+	) {
+		return false;
+	}
+	return true;
+}
+
 function posToXY(pos) {
-	var col=pos%size;
-	var row=Math.floor(pos/size);
+	var col = pos % boardParams.width;
+	var row = Math.floor( pos / boardParams.width);
 	return {"row": row, "col": col};
 }
 
-function xyToPos(row, col, height) {
-	return (row*height + col);
+function xyToPos(row, col) {
+	return (row * boardParams.width + col);
 }
 
 function getRandomInt(min, max) {

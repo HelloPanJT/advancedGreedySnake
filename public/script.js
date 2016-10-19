@@ -1,6 +1,6 @@
 var socket=io.connect();
 var username = "";
-var directions = ["up", "down", "left", "right"];
+var directions = ["u", "d", "l", "r"];
 
 $(document).ready(function(){
 	var size=20;
@@ -53,7 +53,7 @@ function initChessBoard() {
 		for(var row = 0; row < result.height; row++) {
 			tbContent += '<tr>';
 				for(var col = 0; col < result.width; col++){
-					var pos = xyToPos(row, col, result.height);
+					var pos = xyToPos(row, col, result.width);
 					tbContent += '<td id="' + pos +'"></td>';
 				}
 			tbContent+='</tr>';
@@ -103,8 +103,8 @@ function sendMessage() {
     }
 }
 
-function xyToPos(row, col, height) {
-	return (row*height + col);
+function xyToPos(row, col, width) {
+	return (row*width + col);
 }
 
 function setGridColor(pos, color) {
