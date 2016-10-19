@@ -1,8 +1,11 @@
 var socket=io.connect();
 var username = "";
+var directions = ["up", "down", "left", "right"];
+
 $(document).ready(function(){
 	var size=20;
 
+	initChessBoard();
 	$("#userNameRow").hide();
 	$("#sendMsgRow").hide();
 
@@ -21,14 +24,29 @@ $(document).ready(function(){
 		}
 	});
 
-  socket.emit('createSnake',{'name': 'AISnake','len':10});
-  socket.emit('createSnake',{'name':'client1','len':2});
-	socket.emit('createSnake',{'name':'client2','len':2});
+  //socket.emit('createSnake',{'name': 'AISnake','len':10});
+  //socket.emit('createSnake',{'name':'client1','len':2});
 })
 
 socket.on('message', function(data) {
     addMessage(data['message'], data['username']);
 })
+
+function initChessBoard() {
+	$.post("/init", function(result){
+		var size=20;
+		var tb=$('#qipan');
+		var tbContent="";
+		for(var i=0;i<size;i++) {
+			 tbContent+='<tr>';
+					 for(var j=0;j<size;j++){
+							 tbContent+='<td></td>';
+						}
+			 tbContent+='</tr>';
+			 }
+		tb.append(tbContent);
+	});
+}
 
 function setUsername() {
   if ($("#usernameInput").val() != "")
@@ -52,27 +70,22 @@ function sendMessage() {
     {
         var val = $('#msgText').val();
 
-        if (val === "up")
+        if (directions.includes(val))
         {
-          socket.emit('up', "");
+					$.post("/move", {"direction": val, "username": username}, function(result){
+						console.log(result);
+					});
         }
-				else if (val === "down")
-        {
-          socket.emit('down', "");
-        }
-				else if (val === "left")
-				{
-					socket.emit('left', "");
-				}
-				else if (val === "right")
-				{
-					socket.emit('right', "");
+				else if (val === "play") {
+					$.post("/play", {"username": username}, function(result){
+						console.log(result);
+					});
 				}
         else {
           socket.emit('message', val);
         }
 				addMessage(val, "Me");
-        $('#msgText').val('')
+        $('#msgText').val('');
     }
 }
 
