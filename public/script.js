@@ -29,22 +29,36 @@ $(document).ready(function(){
 })
 
 socket.on('message', function(data) {
-    addMessage(data['message'], data['username']);
+  addMessage(data['message'], data['username']);
+})
+
+socket.on('redraw', function(data) {
+	console.log(data);
+	if (data.erase) {
+		data.erase.forEach(function(ele) {
+			setGridColor(ele, 'white');
+		})
+	}
+	if (data.append) {
+		data.append.forEach(function(ele) {
+			setGridColor(ele, data.color);
+		})
+	}
 })
 
 function initChessBoard() {
 	$.post("/init", function(result){
-		var size=20;
-		var tb=$('#qipan');
-		var tbContent="";
-		for(var i=0;i<size;i++) {
-			 tbContent+='<tr>';
-					 for(var j=0;j<size;j++){
-							 tbContent+='<td></td>';
-						}
-			 tbContent+='</tr>';
-			 }
-		tb.append(tbContent);
+		var board = $('#chessBoard');
+		var tbContent = "";
+		for(var row = 0; row < result.height; row++) {
+			tbContent += '<tr>';
+				for(var col = 0; col < result.width; col++){
+					var pos = xyToPos(row, col, result.height);
+					tbContent += '<td id="' + pos +'"></td>';
+				}
+			tbContent+='</tr>';
+		}
+		board.append(tbContent);
 	});
 }
 
@@ -89,7 +103,23 @@ function sendMessage() {
     }
 }
 
+function xyToPos(row, col, height) {
+	return (row*height + col);
+}
 
+function setGridColor(pos, color) {
+	$('#'+pos).css('background-color', color);
+}
+
+
+socket.on('redrawQipan',function(allSnakes){
+		inital();
+		console.log('redrawQipan received');
+		for(var i=0;i<allSnakes.length;i++)
+			for(var j=0;j<allSnakes[i].pos.length;j++){
+				set(allSnakes[i].pos[j],'black');
+		}
+})
 
 
 //create a snake

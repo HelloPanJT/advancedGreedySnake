@@ -1,8 +1,8 @@
-#qipan{
+#chessBoard {
 	border-bottom: 1px solid #CCCCCC;
 	border-left: 1px solid #CCCCCC;
 }
-#qipan td{
+#chessBoard td{
 	border-right: 1px solid #CCCCCC;
 	border-top:1px solid #CCCCCC;
 	height: 20px;

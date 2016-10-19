@@ -18,7 +18,8 @@ var colMove=[-1,0,1];
 var wholeMove=[[1,0],[-1,0],[0,1],[0,-1]];
 var allSnakes = {};
 var chessBoard = {};
-var boardParams = {"width": 40, "length": 80};
+var boardParams = {"height": 40, "width": 60};
+var usedGrid = new Set();
 
 MongoClient.connect(mongoURI,function(err,db){
 	if(err)
@@ -28,32 +29,29 @@ MongoClient.connect(mongoURI,function(err,db){
 			if(err)
 				throw err;
 			else{
-				dbglobal=db;
-				db.collection(collectName).insert
-				var index=0;
-
 				app.use(express.static('public'));
 				app.set('view engine','ejs');
+				var server=app.listen(5001,function(){
+					console.log('listen on 5001');
+				})
+				io=require('socket.io').listen(server);
+
 				app.get('/',function(req,res){
 					db.collection(msgCollection).find().toArray(
 						function(err, allMessages) {
 							res.render('index', {'messages': allMessages})
 					})
 				});
-				app.post('/init',function(req,res){
+				app.post('/init', function(req,res){
 					res.send(boardParams);
 				});
-				app.post('/move',function(req,res){
+				app.post('/move', function(req,res){
 					res.send('success');
 				});
-				app.post('/play',function(req,res){
+				app.post('/play', function(req,res){
+					initialSnake(req.username, io);
 					res.send('success');
 				});
-
-				var server=app.listen(5001,function(){
-					console.log('listen on 5001');
-				})
-				io=require('socket.io').listen(server);
 
 				io.sockets.on('connection', function(socket) {
 					socket.on('setUsername', function(data) {
@@ -111,8 +109,30 @@ MongoClient.connect(mongoURI,function(err,db){
 })}
 })
 
-function initialSnake(username) {
+function initialSnake(username, io) {
+	var pos = getUnusedPlace();
+	usedGrid.add(pos);
+	allSnakes.username = [pos];
 
+	io.sockets.emit('redraw', {"erase": [], "append": allSnakes, "color": "black"});
+}
+
+function moveSnake(username, cmd) {
+
+}
+
+function getUnusedPlace() {
+	while (true) {
+		var pos = getRandomInt(0, boardParams.width * boardParams.height - 1);
+		if ( !usedGrid.has(pos) &&
+			!usedGrid.has(pos - 1) &&
+			!usedGrid.has(pos + 1) &&
+			!usedGrid.has(pos + boardParams.height) &&
+			!usedGrid.has(pos - boardParams.height)
+		) {
+			return pos;
+		}
+	}
 }
 
 function posToXY(pos) {
@@ -121,10 +141,13 @@ function posToXY(pos) {
 	return {"row": row, "col": col};
 }
 
-function xyToPos(row, col) {
-	return (row*size + col);
+function xyToPos(row, col, height) {
+	return (row*height + col);
 }
 
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 
 
