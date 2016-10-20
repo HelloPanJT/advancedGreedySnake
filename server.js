@@ -16,10 +16,24 @@ var time={};
 var rowMove=[-1,0,1];
 var colMove=[-1,0,1];
 var wholeMove=[[1,0],[-1,0],[0,1],[0,-1]];
-var allSnakes = {};
-var chessBoard = {};
-var boardParams = {"height": 40, "width": 60};
-var gridOccupied = new Set(); //not include the food, only snake
+
+var allSnakes = [];
+var BOARD_PARAMS = {"height": 40, "width": 60};
+var snakeGrids = new Set(); //all the girds occupied by snake
+var foodGrids = new Set(); //all the grids occupied by
+var COLOR_POOL = ["SALMON", "HOTPINK", "ORANGERED", "GOLD", "MAGENTA", "SPRINGGREEN", "LIGHTSEAGREEN", "CYAN", "TURQUOISE", "STEELBLUE", "ROYALBLUE", "WHEAT", "SANDYBROWN"];
+var SNAKE_LENGTH = 3;
+
+//Snake Class
+function Snake(username) {
+	this.username = username;
+	this.color = colorPool.shift();
+	this.length = SNAKE_LENGTH;
+	this.direction = "d";
+	this.body = [];
+}
+
+Snake.prototype.
 
 MongoClient.connect(mongoURI,function(err,db){
 	if(err)
@@ -46,7 +60,7 @@ MongoClient.connect(mongoURI,function(err,db){
 					})
 				});
 				app.post('/init', function(req,res){
-					res.send(boardParams);
+					res.send(BOARD_PARAMS);
 				});
 				app.post('/move', function(req,res){
 
@@ -116,9 +130,9 @@ MongoClient.connect(mongoURI,function(err,db){
 
 function initialSnake(username, io) {
 	var pos = getUnusedPlace();
-	gridOccupied.add(pos);
+	snakeGrids.add(pos);
 	allSnakes[username] = [pos];
-	io.sockets.emit('redraw', {"erase": [], "append": Array.from(gridOccupied), "color": "black"});
+	io.sockets.emit('redraw', {"erase": [], "append": Array.from(snakeGrids), "color": "black"});
 }
 
 //snake save as [tail, body, head]
@@ -145,11 +159,11 @@ function moveSnake(username, cmd, io) {
 
 	snake.push(nextPos); //push the next position as head, then check if it is legal
 	var tail = snake.shift() //remove the tail first
-	gridOccupied.delete(tail);
+	snakeGrids.delete(tail);
 
 	if (canMove(nextPosXY)) {
 		console.log('move', tail, nextPos);
-		gridOccupied.add(nextPos);
+		snakeGrids.add(nextPos);
 		io.sockets.emit('redraw', {"erase": [tail], "append": [nextPos], "color": "black"});
 	}
 	else {
@@ -158,7 +172,7 @@ function moveSnake(username, cmd, io) {
 		var erase = [tail];
 		snake.forEach(function(ele) {
 			erase.push(ele);
-			gridOccupied.delete(ele);
+			snakeGrids.delete(ele);
 		})
 		io.sockets.emit('redraw', {"erase": erase, "append": []});
 		delete snake;
@@ -167,26 +181,22 @@ function moveSnake(username, cmd, io) {
 
 function getUnusedPlace() {
 	while (true) {
-		var pos = getRandomInt(0, boardParams.width * boardParams.height - 1);
-		if ( !gridOccupied.has(pos) &&
-			!gridOccupied.has(pos - 1) &&
-			!gridOccupied.has(pos + 1) &&
-			!gridOccupied.has(pos + boardParams.height) &&
-			!gridOccupied.has(pos - boardParams.height)
+		var pos = getRandomInt(0, BOARD_PARAMS.width * BOARD_PARAMS.height - 1);
+		var posXY = posToXY(pos);
+		if ( !snakeGrids.has(pos) &&
 		) {
-			return pos;
+			for(var i = 0; i < SNAKE_LENGTH)
 		}
 	}
 }
 
 function canMove(posXY) {
-	console.log(posXY);
 	if (
 		posXY.row < 0 ||
 		posXY.col < 0 ||
-		posXY.row >= boardParams.height ||
-		posXY.col >= boardParams.width ||
-		gridOccupied.has(posXY)
+		posXY.row >= BOARD_PARAMS.height ||
+		posXY.col >= BOARD_PARAMS.width ||
+		snakeGrids.has(posXY)
 	) {
 		return false;
 	}
@@ -194,13 +204,13 @@ function canMove(posXY) {
 }
 
 function posToXY(pos) {
-	var col = pos % boardParams.width;
-	var row = Math.floor( pos / boardParams.width);
+	var col = pos % BOARD_PARAMS.width;
+	var row = Math.floor( pos / BOARD_PARAMS.width);
 	return {"row": row, "col": col};
 }
 
 function xyToPos(row, col) {
-	return (row * boardParams.width + col);
+	return (row * BOARD_PARAMS.width + col);
 }
 
 function getRandomInt(min, max) {
