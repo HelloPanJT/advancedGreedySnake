@@ -31,6 +31,9 @@ MongoClient.connect(mongoURI,function(err,db){
 			else{
 				app.use(express.static('public'));
 				app.set('view engine','ejs');
+				var bodyParser = require('body-parser');
+				app.use(bodyParser.json());
+				app.use(bodyParser.urlencoded({ extended: true }));
 				var server=app.listen(5001,function(){
 					console.log('listen on 5001');
 				})
@@ -46,10 +49,12 @@ MongoClient.connect(mongoURI,function(err,db){
 					res.send(boardParams);
 				});
 				app.post('/move', function(req,res){
+
+					setInterval(moveSnake(req.body.username, req.body.cmd, io), 1000);
 					res.send('success');
 				});
 				app.post('/play', function(req,res){
-					initialSnake(req.username, io);
+					initialSnake(req.body.username, io);
 					res.send('success');
 				});
 
@@ -112,33 +117,50 @@ MongoClient.connect(mongoURI,function(err,db){
 function initialSnake(username, io) {
 	var pos = getUnusedPlace();
 	gridOccupied.add(pos);
-	allSnakes.username = [pos];
+	allSnakes[username] = [pos];
 	io.sockets.emit('redraw', {"erase": [], "append": Array.from(gridOccupied), "color": "black"});
 }
 
-function moveSnake(username, cmd, io) {
-	var nextPos = 0;
-	var snake = allSnakes.username;
-	var head = snake[snake.length-1];
+//snake save as [tail, body, head]
+//every movement, first update the snake to the new position
+//then check the new position is legal or not
+//if legal, notify the client to draw the movement, or not, delete the snake
 
-	if (cmd == "u") {
-		nextPos = head - boardParams.width;
-	} else if (cmd == "d") {
-		nextPos = head + boardParams.width;
-	} else if (cmd == "l") {
-		nextPos = head - 1;
+function moveSnake(username, cmd, io) {
+	var nextPosXY = null;
+	var nextPos = 0;
+	var snake = allSnakes[username];
+	var head = posToXY(snake[snake.length-1]);
+
+	if (cmd == "w") {
+		nextPosXY = {"row": head.row - 1, "col": head.col};
+	} else if (cmd == "s") {
+		nextPosXY = {"row": head.row + 1, "col": head.col};
+	} else if (cmd == "a") {
+		nextPosXY = {"row": head.row, "col": head.col - 1};
 	} else {
-		nextPos = head + 1;
+		nextPosXY = {"row": head.row, "col": head.col + 1};
 	}
-	snake.push(nextPos);
-	var tail = snake.shift()
+	nextPos = xyToPos(nextPosXY.row, nextPosXY.col);
+
+	snake.push(nextPos); //push the next position as head, then check if it is legal
+	var tail = snake.shift() //remove the tail first
 	gridOccupied.delete(tail);
 
-	if (canMove(nextPos)) {
+	if (canMove(nextPosXY)) {
+		console.log('move', tail, nextPos);
 		gridOccupied.add(nextPos);
 		io.sockets.emit('redraw', {"erase": [tail], "append": [nextPos], "color": "black"});
 	}
 	else {
+		console.log('die');
+		snake.pop(); //pop out the head since it is illegal
+		var erase = [tail];
+		snake.forEach(function(ele) {
+			erase.push(ele);
+			gridOccupied.delete(ele);
+		})
+		io.sockets.emit('redraw', {"erase": erase, "append": []});
 		delete snake;
 	}
 }
@@ -157,14 +179,14 @@ function getUnusedPlace() {
 	}
 }
 
-function canMove(pos) {
-	var posXY = posToXY(pos);
+function canMove(posXY) {
+	console.log(posXY);
 	if (
 		posXY.row < 0 ||
 		posXY.col < 0 ||
 		posXY.row >= boardParams.height ||
 		posXY.col >= boardParams.width ||
-		gridOccupied.includes(posXY)
+		gridOccupied.has(posXY)
 	) {
 		return false;
 	}

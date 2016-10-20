@@ -1,6 +1,6 @@
 var socket=io.connect();
 var username = "";
-var directions = ["u", "d", "l", "r"];
+var directions = ["w", "a", "s", "d"];
 
 $(document).ready(function(){
 	var size=20;
@@ -33,7 +33,6 @@ socket.on('message', function(data) {
 })
 
 socket.on('redraw', function(data) {
-	console.log(data);
 	if (data.erase) {
 		data.erase.forEach(function(ele) {
 			setGridColor(ele, 'white');
@@ -86,7 +85,7 @@ function sendMessage() {
 
         if (directions.includes(val))
         {
-					$.post("/move", {"direction": val, "username": username}, function(result){
+					$.post("/move", {"cmd": val, "username": username}, function(result){
 						console.log(result);
 					});
         }
