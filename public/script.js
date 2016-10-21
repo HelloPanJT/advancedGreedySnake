@@ -1,6 +1,6 @@
 var socket=io.connect();
 var username = "";
-var directions = ["w", "a", "s", "d"];
+var directions = {"37": "left", "38": "up", "39": "right", "40": "down"};
 
 $(document).ready(function(){
 	var size=20;
@@ -23,10 +23,16 @@ $(document).ready(function(){
 			sendMessage();
 		}
 	});
-
-  //socket.emit('createSnake',{'name': 'AISnake','len':10});
-  //socket.emit('createSnake',{'name':'client1','len':2});
 })
+
+$(document).keydown(function(event) {
+    var key = event.keyCode;
+		if (directions[key]) {
+			$.post("/move", {"cmd": directions[key], "username": username}, function(result){
+				console.log(result);
+			});
+		}
+});
 
 socket.on('message', function(data) {
   addMessage(data['message'], data['username']);
@@ -83,13 +89,7 @@ function sendMessage() {
     {
         var val = $('#msgText').val();
 
-        if (directions.includes(val))
-        {
-					$.post("/move", {"cmd": val, "username": username}, function(result){
-						console.log(result);
-					});
-        }
-				else if (val === "play") {
+				if (val === "play") {
 					$.post("/play", {"username": username}, function(result){
 						console.log(result);
 					});
@@ -99,6 +99,7 @@ function sendMessage() {
         }
 				addMessage(val, "Me");
         $('#msgText').val('');
+				$('#msgText').blur();
     }
 }
 
@@ -109,53 +110,3 @@ function xyToPos(row, col, width) {
 function setGridColor(pos, color) {
 	$('#'+pos).css('background-color', color);
 }
-
-
-// socket.on('redrawQipan',function(allSnakes){
-// 		inital();
-// 		console.log('redrawQipan received');
-// 		for(var i=0;i<allSnakes.length;i++)
-// 			for(var j=0;j<allSnakes[i].pos.length;j++){
-// 				set(allSnakes[i].pos[j],'black');
-// 		}
-// })
-//
-//
-// //create a snake
-// socket.on('status', function(data) {
-// 	console.log('create sucess terminal');
-// 	if(data['code']=='101')
-// 		$('#status').html('sucess');
-// 	else
-// 		$('#status').html('fail to create Snake');
-// })
-//
-// socket.on('moveSnake',function(data){
-// 	for(var i=0;i<data.length;i++){
-// 		for(var j=0;j<data[i]['set'].length;j++)
-// 			set(data[i]['set'][j],'black');
-// 		for(var j=0;j<data[i]['unset'].length;j++)
-// 			set(data[i]['unset'][j],'white');
-// 	}
-// })
-// // socket.on('redrawQipan',function(allSnakes){
-// // 		inital();
-// // 		console.log('redrawQipan received');
-// // 		for(var i=0;i<allSnakes.length;i++)
-// // 			for(var j=0;j<allSnakes[i].pos.length;j++){
-// // 				set(allSnakes[i].pos[j],'black');
-// // 		}
-// // })
-//
-// function set(pos,color){
-// 	var col=pos%size;
-// 	var row=Math.floor(pos/size);
-// 	var selector='#qipan tr:eq('+row+')'+' td:eq('+col+')';
-// 	$(selector).css('background-color',color);
-// }
-// function inital(){
-// 	for(var i=0;i<size;i++)
-// 		for(var j=0;j<size;j++){
-// 			set(i*size+j,'white');
-// 		}
-// }
