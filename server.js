@@ -17,11 +17,11 @@ var rowMove=[-1,0,1];
 var colMove=[-1,0,1];
 var wholeMove=[[1,0],[-1,0],[0,1],[0,-1]];
 
-var allSnakes = [];
+var allSnakes = {};
 var BOARD_PARAMS = {"height": 40, "width": 60};
 var snakeGrids = new Set(); //all the girds occupied by snake
 var foodGrids = new Set(); //all the grids occupied by
-var COLOR_POOL = ["SALMON", "HOTPINK", "ORANGERED", "GOLD", "MAGENTA", "SPRINGGREEN", "LIGHTSEAGREEN", "CYAN", "TURQUOISE", "STEELBLUE", "ROYALBLUE", "WHEAT", "SANDYBROWN"];
+var colorPool = ["SALMON", "HOTPINK", "ORANGERED", "GOLD", "MAGENTA", "SPRINGGREEN", "LIGHTSEAGREEN", "CYAN", "TURQUOISE", "STEELBLUE", "ROYALBLUE", "WHEAT", "SANDYBROWN"];
 var SNAKE_LENGTH = 3;
 
 //Snake Class
@@ -30,10 +30,58 @@ function Snake(username) {
 	this.color = colorPool.shift();
 	this.length = SNAKE_LENGTH;
 	this.direction = "d";
-	this.body = [];
+	this.body = getUnusedPlace();
+	var append = [];
+	this.body.forEach(function(ele) {append.push(xyToPos(ele.row, ele.col))});
+	io.sockets.emit('redraw', {"erase": [], "append": append, "color": this.color});
 }
 
-Snake.prototype.
+//snake save as [tail, body, head]
+//every movement, first update the snake to the new position
+//then check the new position is legal or not
+//if legal, notify the client to draw the movement, or not, delete the snake
+Snake.prototype.nextMove = function() {
+	var nextPosXY = null;
+	var nextPos = 0;
+	var head = this.body[this.body.length-1];
+
+	if (this.direction == "w") {
+		nextPosXY = {"row": head.row - 1, "col": head.col};
+	} else if (this.direction == "s") {
+		nextPosXY = {"row": head.row + 1, "col": head.col};
+	} else if (this.direction == "a") {
+		nextPosXY = {"row": head.row, "col": head.col - 1};
+	} else {
+		nextPosXY = {"row": head.row, "col": head.col + 1};
+	}
+
+	this.body.push(nextPosXY); //push the next position as head, then check if it is legal
+	var tail = this.body.shift(); //remove the tail first
+	snakeGrids.delete(tail);
+
+	if (canMove(nextPosXY)) {
+		snakeGrids.add(nextPosXY);
+		io.sockets.emit(
+			'redraw',
+			{
+				"erase": [xyToPos(tail.row, tail.col)],
+				"append": [xyToPos(nextPosXY.row, nextPosXY.col)],
+				"color": this.color
+			}
+		);
+	}
+	else {
+		this.body.pop(); //pop out the head since it is illegal
+		var erase = [xyToPos(tail.row, tail.col)];
+		this.body.forEach(function(ele) {
+			erase.push(xyToPos(ele.row, ele.col));
+			snakeGrids.delete(ele);
+		})
+		io.sockets.emit('redraw', {"erase": erase, "append": []});
+		colorPool.push(this.color);
+		delete allSnakes[this.username];
+	}
+}
 
 MongoClient.connect(mongoURI,function(err,db){
 	if(err)
@@ -63,12 +111,15 @@ MongoClient.connect(mongoURI,function(err,db){
 					res.send(BOARD_PARAMS);
 				});
 				app.post('/move', function(req,res){
-
-					setInterval(moveSnake(req.body.username, req.body.cmd, io), 1000);
+					for (var key in allSnakes) {
+						allSnakes[key].nextMove();
+					}
 					res.send('success');
 				});
 				app.post('/play', function(req,res){
-					initialSnake(req.body.username, io);
+					if (!allSnakes.hasOwnProperty(req.body.username)) {
+						allSnakes[req.body.username] = new Snake(req.body.username);
+					}
 					res.send('success');
 				});
 
@@ -85,6 +136,8 @@ MongoClient.connect(mongoURI,function(err,db){
                 db.collection(msgCollection).insert(data, function(err, ids){})
             });
           })
+
+
 
 					// socket.on('createSnake',function(snakeInfo){
 					// 	db.collection(collectName).find().toArray(function(err,allSnakes){
@@ -121,61 +174,66 @@ MongoClient.connect(mongoURI,function(err,db){
 					//time=setTimeout(move,2000);
 					socket.on('disconnect',function(){
 						console.log('disconnect');
-						clearTimeout(time);
+						//clearTimeout(time);
 					})
 				})
+			tick = setInterval(updateState, 1000);
 		}
 })}
 })
 
-function initialSnake(username, io) {
-	var pos = getUnusedPlace();
-	snakeGrids.add(pos);
-	allSnakes[username] = [pos];
-	io.sockets.emit('redraw', {"erase": [], "append": Array.from(snakeGrids), "color": "black"});
-}
+// function initialSnake(username, io) {
+// 	var pos = getUnusedPlace();
+// 	snakeGrids.add(pos);
+// 	allSnakes[username] = [pos];
+// 	io.sockets.emit('redraw', {"erase": [], "append": Array.from(snakeGrids), "color": "black"});
+// }
+//
+//
+//
+// function moveSnake(username, cmd, io) {
+// 	var nextPosXY = null;
+// 	var nextPos = 0;
+// 	var snake = allSnakes[username];
+// 	var head = posToXY(snake[snake.length-1]);
+//
+// 	if (cmd == "w") {
+// 		nextPosXY = {"row": head.row - 1, "col": head.col};
+// 	} else if (cmd == "s") {
+// 		nextPosXY = {"row": head.row + 1, "col": head.col};
+// 	} else if (cmd == "a") {
+// 		nextPosXY = {"row": head.row, "col": head.col - 1};
+// 	} else {
+// 		nextPosXY = {"row": head.row, "col": head.col + 1};
+// 	}
+// 	nextPos = xyToPos(nextPosXY.row, nextPosXY.col);
+//
+// 	snake.push(nextPos); //push the next position as head, then check if it is legal
+// 	var tail = snake.shift() //remove the tail first
+// 	snakeGrids.delete(tail);
+//
+// 	if (canMove(nextPosXY)) {
+// 		console.log('move', tail, nextPos);
+// 		snakeGrids.add(nextPos);
+// 		io.sockets.emit('redraw', {"erase": [tail], "append": [nextPos], "color": "black"});
+// 	}
+// 	else {
+// 		console.log('die');
+// 		snake.pop(); //pop out the head since it is illegal
+// 		var erase = [tail];
+// 		snake.forEach(function(ele) {
+// 			erase.push(ele);
+// 			snakeGrids.delete(ele);
+// 		})
+// 		io.sockets.emit('redraw', {"erase": erase, "append": []});
+// 		delete snake;
+// 	}
+// }
 
-//snake save as [tail, body, head]
-//every movement, first update the snake to the new position
-//then check the new position is legal or not
-//if legal, notify the client to draw the movement, or not, delete the snake
-
-function moveSnake(username, cmd, io) {
-	var nextPosXY = null;
-	var nextPos = 0;
-	var snake = allSnakes[username];
-	var head = posToXY(snake[snake.length-1]);
-
-	if (cmd == "w") {
-		nextPosXY = {"row": head.row - 1, "col": head.col};
-	} else if (cmd == "s") {
-		nextPosXY = {"row": head.row + 1, "col": head.col};
-	} else if (cmd == "a") {
-		nextPosXY = {"row": head.row, "col": head.col - 1};
-	} else {
-		nextPosXY = {"row": head.row, "col": head.col + 1};
-	}
-	nextPos = xyToPos(nextPosXY.row, nextPosXY.col);
-
-	snake.push(nextPos); //push the next position as head, then check if it is legal
-	var tail = snake.shift() //remove the tail first
-	snakeGrids.delete(tail);
-
-	if (canMove(nextPosXY)) {
-		console.log('move', tail, nextPos);
-		snakeGrids.add(nextPos);
-		io.sockets.emit('redraw', {"erase": [tail], "append": [nextPos], "color": "black"});
-	}
-	else {
-		console.log('die');
-		snake.pop(); //pop out the head since it is illegal
-		var erase = [tail];
-		snake.forEach(function(ele) {
-			erase.push(ele);
-			snakeGrids.delete(ele);
-		})
-		io.sockets.emit('redraw', {"erase": erase, "append": []});
-		delete snake;
+function updateState() {
+	console.log(allSnakes);
+	for (var key in allSnakes) {
+  	allSnakes[key].nextMove();
 	}
 }
 
@@ -183,9 +241,18 @@ function getUnusedPlace() {
 	while (true) {
 		var pos = getRandomInt(0, BOARD_PARAMS.width * BOARD_PARAMS.height - 1);
 		var posXY = posToXY(pos);
-		if ( !snakeGrids.has(pos) &&
-		) {
-			for(var i = 0; i < SNAKE_LENGTH)
+		var body = [];
+
+		var i = 5; //5 ununsed grid before the head
+		while (i > -SNAKE_LENGTH) {
+			body.push({"row": posXY.row, "col": posXY.col + i})
+			i--;
+		}
+
+		if (body.every(function(ele) {return canMove(ele)})) {
+			body = body.slice(5, body.length).reverse();
+			body.forEach(function(ele) {snakeGrids.add(ele)});
+			return body;
 		}
 	}
 }
