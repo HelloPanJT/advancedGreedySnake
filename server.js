@@ -35,7 +35,6 @@ var allAiSnakes={};
 //if legal, notify the client to draw the movement, or not, delete the snake
 var goDie=function(snakesPool) {
 	var erase = [];
-	console.log("die");
 	this.body.forEach(function(ele) {
 		erase.push(xyToPos(ele.row, ele.col));
 		snakeGrids.delete(xyToPos(ele.row, ele.col));
@@ -78,9 +77,6 @@ var nextMove=function() {
 	}
 	nextPos = xyToPos(nextPosXY.row, nextPosXY.col);
     var targetRes=this.getToAllSnakeDis(allSnakes,allAiSnakes);
-    // console.log("target snake:"+targetRes.closetSnake);
-    // console.log("target pool:"+targetRes.closetPool);
-    // console.log("target dismin:"+targetRes.minDis);
     if(targetRes.minDis==1){
     	this.eatSnake(targetRes.closetSnake,targetRes.closetPool);
     }
@@ -93,7 +89,6 @@ var nextMove=function() {
 				this.nextStep(nextPos);
 			}
 			else {
-				console.log("die");
 				this.goDie(allSnakes);
 			}
 		}
