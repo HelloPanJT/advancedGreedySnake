@@ -17,7 +17,7 @@ var rowMove=[-1,0,1];
 var colMove=[-1,0,1];
 var wholeMove=[[1,0],[-1,0],[0,1],[0,-1]];
 var MAX_AISNAKE_NUM=1;
-var curAISnake=0;
+var curAISnakeNum=0;
 var MAX_FOOD_NUMBER = 2;
 var SNAKE_LENGTH = 4;
 var BOARD_PARAMS = {"height": 40, "width": 60};
@@ -195,8 +195,10 @@ MongoClient.connect(mongoURI,function(err,db){
             });
           })
           socket.on('createAISnake',function(){
-          	if(curAISnake<MAX_AISNAKE_NUM)
+          	if(curAISnakeNum<MAX_AISNAKE_NUM){
+          		curAISnakeNum++;
           		generateAiSnake(1);
+          	}
           })
 		socket.on('disconnect',function(){
 			var username = socket.username;
@@ -211,12 +213,11 @@ MongoClient.connect(mongoURI,function(err,db){
 	})}
 })
 function updateCurSnakeNum(){
-	curAISnake=Object.keys(allAiSnakes).length;
+	curAISnakeNum=Object.keys(allAiSnakes).length;
 }
 function updateState() {
 	generateFood()
 	for (var key in allSnakes) {
-
   		allSnakes[key].nextMove();
 	}
 }
@@ -299,7 +300,7 @@ var choicePriority={
 	fourthQuadrant:[[1,0],[0,1],[-1,0],[0,-1]]//preyRow>airow&&preycol>aicol
 };
 var generateAiSnake=function(){
-	var name="AISnake"+curAISnake;
+	var name="AISnake"+curAISnakeNum;
 	allAiSnakes[name]=AIsnake();
 	allAiSnakes[name].createSnake();
 	var append = [];
@@ -317,6 +318,7 @@ var eatSnake=function(username,preySnakesPool){
 		this.body.push(prey.body.pop());
 	}
 	this.length=this.body.length;
+	updateCurSnakeNum();
 	delete preySnakesPool[username];
 }
 
@@ -444,7 +446,6 @@ var AIsnake=function(name){
 				minDis=dis;
 			}
 		}
-		console.log(Object.keys(allSnakes).length);
 		if(minDis==1&&this.length>allSnakes[this.prefSnakeName].length)
 			this.eatSnake(this.prefSnakeName,allSnakes);
 		else if(this.length>allSnakes[this.prefSnakeName].length){
