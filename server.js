@@ -394,7 +394,7 @@ var getToAllSnakeDis=function(clientSnakesPool,aiSnakesPool){
 	var minDis=INFINITE;
 	var res1=searchTarget(this,clientSnakesPool,minDis);
 	var res2=searchTarget(this,aiSnakesPool,minDis);
-	return res1.minDis<=res2?res1:res2;
+	return res1.minDis<=res2.minDis?res1:res2;
 }
 
 var searchTarget=function(predator,snakesPool,minDis){
