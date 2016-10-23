@@ -27,6 +27,7 @@ var foodGrids = new Set(); //all the grids occupied by food, saved grid ID "25"
 var colorPool = ["SALMON", "HOTPINK", "ORANGERED", "GOLD", "MAGENTA", "SPRINGGREEN", "LIGHTSEAGREEN", "CYAN", "TURQUOISE", "STEELBLUE", "ROYALBLUE", "WHEAT", "SANDYBROWN"];
 var INFINITE=BOARD_PARAMS.width*BOARD_PARAMS.height+10;
 var allAiSnakes={};
+var globalDB={};
 //Snake Class
 //snake save as [tail, body, head]
 //every movement, first check whether the next position is a food.
@@ -41,7 +42,12 @@ var goDie=function(snakesPool) {
 	})
 	io.sockets.emit('redraw', {"erase": erase, "append": []});
 	colorPool.push(this.color);
+	var d=new Date();
+	d.endTime=d.getTime();
+	insertLog(snakesPool[this.username]);
 	delete snakesPool[this.username];
+	redrawLeaderBorder();
+
 }
 
 
@@ -108,6 +114,7 @@ var eat=function(nextPos) {
 			"color": this.color,
 		}
 	);
+	redrawLeaderBorder();
 }
 
 function Snake(username) {
@@ -116,7 +123,9 @@ function Snake(username) {
 	this.length = SNAKE_LENGTH;
 	this.direction = "right";
 	this.body = getUnusedPlace(); //saved {"row": "2", "col": "5"}
-	var append = [];
+	this.startTime="";
+	this.endTime="";
+	var append=[];
 	this.goDie=goDie;
 	this.nextStep=nextStep;
 	this.nextMove=nextMove;
@@ -142,6 +151,7 @@ MongoClient.connect(mongoURI,function(err,db){
 			if(err)
 				throw err;
 			else{
+				globalDB=db;
 				test = new Set();
 				app.use(express.static('public'));
 				app.set('view engine','ejs');
@@ -172,6 +182,9 @@ MongoClient.connect(mongoURI,function(err,db){
 				app.post('/play', function(req,res){
 					if (!allSnakes.hasOwnProperty(req.body.username)) {
 						allSnakes[req.body.username] = new Snake(req.body.username);
+						redrawLeaderBorder();
+						var d=new Date();
+						allSnakes[req.body.username].startTime=d.getTime();
 					}
 					res.send('success');
 				});
@@ -180,7 +193,9 @@ MongoClient.connect(mongoURI,function(err,db){
 					socket.on('setUsername', function(data) {
           	socket.username = data;
           })
-
+		  socket.on("getLeaderBorder",function(){
+		  	 redrawLeaderBorder();
+		  })
           socket.on('message', function (message) {
             db.collection(msgCollection).find().toArray(
               function(err, words) {
@@ -309,11 +324,13 @@ var updateAISnake=function(){
 }
 var eatSnake=function(username,preySnakesPool){
 	var prey=preySnakesPool[username];
+	redrawEattenSnake(prey,this);
 	while(prey.body.length!=0){
 		this.body.push(prey.body.pop());
 	}
 	this.length=this.body.length;
 	updateCurSnakeNum();
+	redrawLeaderBorder();
 	delete preySnakesPool[username];
 }
 
@@ -406,6 +423,7 @@ var searchTarget=function(predator,snakesPool,minDis){
 	}
 	return {minDis:minDis,closetSnake:closetSnake,closetPool:closetPool};
 }
+
 var AIsnake=function(name){
 	var ai=new Object();
 	ai.color="black";
@@ -467,4 +485,20 @@ var AIsnake=function(name){
 		}
 	}
 	return ai;
+}
+function redrawLeaderBorder(){
+	var data=[];
+	for(var key in allSnakes){
+		data.push({name:key,length:allSnakes[key].length,color:allSnakes[key].color});
+	}
+	io.sockets.emit('redrawLeaderBorder',data);
+}
+function redrawEattenSnake(snake,predator){
+	append=[];
+	snake.body.forEach(function(ele) {append.push(xyToPos(ele.row, ele.col))});
+	io.sockets.emit('redraw', {"erase": [], "append": append, "color": predator.color});
+}
+function insertLog(snake){
+	var data={username:snake.username,length:snake.length,mininute:Math.round((snake.endTime-snake.endTime)/60000)};
+	globalDB.collection("userLog").insert(data,function(err,ids){});
 }

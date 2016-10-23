@@ -37,7 +37,18 @@ $(document).keydown(function(event) {
 socket.on('message', function(data) {
   addMessage(data['message'], data['username']);
 })
-
+socket.on('redrawLeaderBorder',function(data){
+	data.sort(comparator);
+	$("#LeaderBoardTable").empty();
+	for(var i=0;i<data.length;i++){
+		if(data[i].name==username){
+			console.log(data[i].length);
+			$("#snakeLength").text(data[i].length);
+			$("#snakeColor").text(data[i].color);
+		}
+		$("#LeaderBoardTable").append("<tr>"+"<td>"+data[i].name+":"+"</td>"+"<td>"+data[i].length+"</td>"+"</tr>");
+	}
+});
 socket.on('redraw', function(data) {
 	if (data.erase) {
 		data.erase.forEach(function(ele) {
@@ -51,6 +62,7 @@ socket.on('redraw', function(data) {
 	}
 })
 socket.emit('createAISnake',{});
+socket.emit('getLeaderBorder',{});
 function initChessBoard() {
 	$.post("/init", function(result){
 		var board = $('#chessBoard');
@@ -90,7 +102,6 @@ function sendMessage() {
         var val = $('#msgText').val();
 				if (val === "play") {
 					$.post("/play", {"username": username}, function(result){
-						console.log(result);
 					});
 				}
         else {
@@ -108,4 +119,7 @@ function xyToPos(row, col, width) {
 
 function setGridColor(pos, color) {
 	$('#'+pos).css('background-color', color);
+}
+function comparator(a,b){
+	b.length-a.length;
 }
