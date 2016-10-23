@@ -50,7 +50,7 @@ socket.on('redraw', function(data) {
 		})
 	}
 })
-
+socket.emit('createAISnake',{});
 function initChessBoard() {
 	$.post("/init", function(result){
 		var board = $('#chessBoard');
@@ -88,7 +88,6 @@ function sendMessage() {
     if ($('#msgText').val() != "")
     {
         var val = $('#msgText').val();
-
 				if (val === "play") {
 					$.post("/play", {"username": username}, function(result){
 						console.log(result);
