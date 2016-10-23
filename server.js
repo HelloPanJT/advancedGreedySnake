@@ -153,7 +153,8 @@ MongoClient.connect(mongoURI,function(err,db){
 				var bodyParser = require('body-parser');
 				app.use(bodyParser.json());
 				app.use(bodyParser.urlencoded({ extended: true }));
-				var server=app.listen(5001,function(){
+				var port=process.env.PORT||5001;
+				var server=app.listen(port,function(){
 					console.log('listen on 5001');
 				})
 				io=require('socket.io').listen(server);
