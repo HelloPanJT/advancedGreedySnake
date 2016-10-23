@@ -205,7 +205,7 @@ MongoClient.connect(mongoURI,function(err,db){
 			}
 		})
 				})
-				tick = setInterval(updateState, 400);
+				tick = setInterval(updateState, 200);
 				AiSnakeTick=setInterval(updateAISnake,200);
 			}
 	})}
