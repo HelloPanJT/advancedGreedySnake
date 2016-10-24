@@ -1,6 +1,7 @@
 #chessBoard {
 	border-bottom: 1px solid #CCCCCC;
 	border-left: 1px solid #CCCCCC;
+	background-color: #FFFFFF;
 }
 #chessBoard td{
 	border-right: 1px solid #CCCCCC;
@@ -17,4 +18,3 @@
 .snakeColor{
 	width: 60px;
 }
-
