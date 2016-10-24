@@ -459,8 +459,6 @@ var AIsnake=function(name){
 				minDis=dis;
 			}
 		}
-		if(minDis==1&&this.length>allSnakes[this.prefSnakeName].length)
-			this.eatSnake(this.prefSnakeName,allSnakes);
 		else if(this.length>allSnakes[this.prefSnakeName].length){
 			var priority=[];
 			var prefHead=getLastElement(allSnakes[this.prefSnakeName].body);
@@ -474,8 +472,10 @@ var AIsnake=function(name){
 			else 
 				priority=choicePriority.fourthQuadrant;
 			for(var i=0;i<=priority.length;i++){
-				if(i==priority.length)
+				if(i==priority.length){
 					this.goDie(allAiSnakes);
+					generateAiSnake(1);
+				}
 				else if(canMove({"row":aiHead.row+priority[i][0],"col":aiHead.col+priority[i][1]})){
 					this.direction=getDirection(priority[i]);
 					this.move();
