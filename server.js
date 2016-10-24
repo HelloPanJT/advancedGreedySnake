@@ -16,7 +16,7 @@ var time={};
 var rowMove=[-1,0,1];
 var colMove=[-1,0,1];
 var wholeMove=[[1,0],[-1,0],[0,1],[0,-1]];
-var MAX_AISNAKE_NUM=1;
+var MAX_AISNAKE_NUM=3;
 var curAISnakeNum=0;
 var MAX_FOOD_NUMBER = 2;
 var SNAKE_LENGTH =3;
@@ -206,8 +206,7 @@ MongoClient.connect(mongoURI,function(err,db){
           })
           socket.on('createAISnake',function(){
           	if(curAISnakeNum<MAX_AISNAKE_NUM){
-          		curAISnakeNum++;
-          		generateAiSnake(1);
+          		generateAiSnake();
           	}
           })
 		socket.on('disconnect',function(){
@@ -310,6 +309,7 @@ var choicePriority={
 	fourthQuadrant:[[1,0],[0,1],[-1,0],[0,-1]]//preyRow>airow&&preycol>aicol
 };
 var generateAiSnake=function(){
+	curAISnakeNum++;
 	var name="AISnake"+curAISnakeNum;
 	allAiSnakes[name]=AIsnake();
 	allAiSnakes[name].createSnake();
@@ -473,7 +473,8 @@ var AIsnake=function(name){
 		for(var i=0;i<=priority.length;i++){
 			if(i==priority.length){
 				this.goDie(allAiSnakes);
-				generateAiSnake(1);
+				curAISnakeNum--;
+				generateAiSnake();
 			}
 			else if(canMove({"row":aiHead.row+priority[i][0],"col":aiHead.col+priority[i][1]})){
 				this.direction=getDirection(priority[i]);
