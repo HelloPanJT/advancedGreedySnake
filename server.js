@@ -45,7 +45,8 @@ var goDie=function(snakesPool) {
 	deleteElementFromArray(snakeNameSet,this.username);
 	var d=new Date();
 	d.endTime=d.getTime();
-	insertLog(snakesPool[this.username]);
+	if(snakesPool==allSnakes)
+		insertLog(snakesPool[this.username]);
 	delete snakesPool[this.username];
 	redrawLeaderBorder();
 
@@ -458,7 +459,7 @@ function walk(predatator,priority){
 	var head=getLastElement(predatator.body);
 	for(var i=0;i<=priority.length;i++){
 		if(i==priority.length){
-			this.goDie(allAiSnakes);
+			predatator.goDie(allAiSnakes);
 			curAISnakeNum--;
 		}
 		else if(canMove({"row":head.row+priority[i][0],"col":head.col+priority[i][1]})){
@@ -512,7 +513,8 @@ function persue(predatator){
 		 deleteElementFromArray(snakeNameSet,predatator.prefSnakeName);
 		if(predatator.prefSnakeName==" "||predatator.walkRoundNum<5){
 			walkWithoutTarget(predatator);
-			predatator.walkRoundNum++;
+			if(predatator.walkRoundNum<5)
+				predatator.walkRoundNum++;
 		}
 		else{
 			predatator.trackNum++;
@@ -524,7 +526,8 @@ function persue(predatator){
 		trakcWithTarget(predatator,predatator.prefSnakeName);
 		if(predatator.trackNum>30){
 			predatator.trackNum=0;
-			snakeNameSet.push(predatator.prefSnakeName);
+			if(allAiSnakes.hasOwnProperty(predatator.prefSnakeName))
+				snakeNameSet.push(predatator.prefSnakeName);
 			predatator.walkRoundNum=0;
 			predatator.prefSnakeName=" ";
 		}

@@ -8,3 +8,13 @@
 	height: 20px;
 	width: 20px;
 }
+.tdColor{
+	border-right: 1px solid #CCCCCC;
+	border-top:1px solid #CCCCCC;
+	height: 10px;
+	width: 30%;
+}
+.snakeColor{
+	width: 60px;
+}
+

@@ -44,11 +44,15 @@ socket.on('redrawLeaderBorder',function(data){
 		if(data[i].name==username){
 			console.log(data[i].length);
 			$("#snakeLength").text(data[i].length);
-			$("#snakeColor").text(data[i].color);
+			paintSnake(data[i].color);
 		}
 		$("#LeaderBoardTable").append("<tr>"+"<td>"+data[i].name+":"+"</td>"+"<td>"+data[i].length+"</td>"+"</tr>");
 	}
 });
+function paintSnake(color){
+	console.log($('.tdColor'));
+	$('.tdColor').css('background-color', color);
+}
 socket.on('redraw', function(data) {
 	if (data.erase) {
 		data.erase.forEach(function(ele) {
