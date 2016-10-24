@@ -459,28 +459,26 @@ var AIsnake=function(name){
 				minDis=dis;
 			}
 		}
-		else if(this.length>allSnakes[this.prefSnakeName].length){
-			var priority=[];
-			var prefHead=getLastElement(allSnakes[this.prefSnakeName].body);
-			/*select the priority try sequence*/
-			if(prefHead.row<=aiHead.row&&prefHead.col>aiHead.col)
-				priority=choicePriority.firstQuadrant;
-			else if(prefHead.row<aiHead.row&&prefHead.col<=aiHead.col)
-				priority=choicePriority.secondQuadrant;
-			else if(prefHead.row>=aiHead.row&&prefHead.col<aiHead.col)
-				priority=choicePriority.thirdQuadrant;
-			else 
-				priority=choicePriority.fourthQuadrant;
-			for(var i=0;i<=priority.length;i++){
-				if(i==priority.length){
-					this.goDie(allAiSnakes);
-					generateAiSnake(1);
-				}
-				else if(canMove({"row":aiHead.row+priority[i][0],"col":aiHead.col+priority[i][1]})){
-					this.direction=getDirection(priority[i]);
-					this.move();
-					break;
-				}
+		var priority=[];
+		var prefHead=getLastElement(allSnakes[this.prefSnakeName].body);
+		/*select the priority try sequence*/
+		if(prefHead.row<=aiHead.row&&prefHead.col>aiHead.col)
+			priority=choicePriority.firstQuadrant;
+		else if(prefHead.row<aiHead.row&&prefHead.col<=aiHead.col)
+			priority=choicePriority.secondQuadrant;
+		else if(prefHead.row>=aiHead.row&&prefHead.col<aiHead.col)
+			priority=choicePriority.thirdQuadrant;
+		else 
+			priority=choicePriority.fourthQuadrant;
+		for(var i=0;i<=priority.length;i++){
+			if(i==priority.length){
+				this.goDie(allAiSnakes);
+				generateAiSnake(1);
+			}
+			else if(canMove({"row":aiHead.row+priority[i][0],"col":aiHead.col+priority[i][1]})){
+				this.direction=getDirection(priority[i]);
+				this.move();
+				break;
 			}
 		}
 	}
