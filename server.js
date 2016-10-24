@@ -8,7 +8,7 @@ var db_password="panjintian";
 var collectName="AISnakeCollection";
 var clientCollect="ClientCollection";
 var msgCollection = "Messages";
-
+var snakeNameSet=[]; 
 var size=20; //this number must be equal to size in script.js
 var dbglobal={};
 var io={};
@@ -42,6 +42,7 @@ var goDie=function(snakesPool) {
 	})
 	io.sockets.emit('redraw', {"erase": erase, "append": []});
 	colorPool.push(this.color);
+	deleteElementFromArray(snakeNameSet,this.username);
 	var d=new Date();
 	d.endTime=d.getTime();
 	insertLog(snakesPool[this.username]);
@@ -180,6 +181,7 @@ MongoClient.connect(mongoURI,function(err,db){
 				app.post('/play', function(req,res){
 					if (!allSnakes.hasOwnProperty(req.body.username)) {
 						allSnakes[req.body.username] = new Snake(req.body.username);
+						snakeNameSet.push(req.body.username);
 						redrawLeaderBorder();
 						var d=new Date();
 						allSnakes[req.body.username].startTime=d.getTime();
@@ -447,23 +449,7 @@ var AIsnake=function(name){
 		return sucess;
 	}
 	ai.track=function(){
-		if(Object.keys(allSnakes).length==0)
-			walkWithoutTarget(this);
-		else{
-			var priority=[];
-			if(this.trackNum<=30){
-				persue(this);
-				this.trackNum++;
-			}
-			else{
-				this.walkRoundNum++;
-				walkWithoutTarget(this);
-				if(this.walkRoundNum>5){
-					this.walkRoundNum=0;
-					this.trackNum=0;
-				}
-			}
-		}
+			persue(this);
 	}
 	return ai;
 }
@@ -500,19 +486,8 @@ function getRandomKey(set){
 	}
 	return " ";
 }
-
-function persue(predatator){
+function trakcWithTarget(predatator,prefSnakeName){
 	var aiHead=getLastElement(predatator.body);
-	var prefSnakeName=" ";
-	var minDis=INFINITE;
-	for (var key in allSnakes){
-			var head=getLastElement(allSnakes[key].body);
-			var dis=getDis(aiHead,head);
-			if(dis<minDis){
-				prefSnakeName=key;
-				minDis=dis;
-			}
-		}
 	var prefHead=getLastElement(allSnakes[prefSnakeName].body);
 		/*select the priority try sequence*/
 	if(prefHead.row<=aiHead.row&&prefHead.col>aiHead.col)
@@ -526,12 +501,55 @@ function persue(predatator){
 	walk(predatator,priority);
 }
 
+function persue(predatator){
+	if(predatator.prefSnakeName==" "){
+		 predatator.prefSnakeName=getRandomElement(snakeNameSet);
+		if(predatator.prefSnakeName==" "||predatator.walkRoundNum<5){
+			walkWithoutTarget(predatator);
+			predatator.walkRoundNum++;
+		}
+		else{
+			predatator.trackNum++;
+			deleteElementFromArray(snakeNameSet,predatator.prefSnakeName);
+			trakcWithTarget(predatator,predatator.prefSnakeName);
+		}
+	}
+	else{
+		predatator.trackNum++;
+		trakcWithTarget(predatator,predatator.prefSnakeName);
+		if(predatator.trackNum>30){
+			predatator.trackNum=0;
+			snakeNameSet.push(predatator.prefSnakeName);
+			predatator.walkRoundNum=0;
+			predatator.prefSnakeName=" ";
+		}
+	}
+}
+
 function redrawLeaderBorder(){
 	var data=[];
 	for(var key in allSnakes){
 		data.push({name:key,length:allSnakes[key].length,color:allSnakes[key].color});
 	}
 	io.sockets.emit('redrawLeaderBorder',data);
+}
+
+function deleteElementFromArray(arr,ele){
+	if(arr.length==0)
+		return;
+	var index=-1;
+	for(var i=0;i<arr.length;i++)
+		if(arr[i]==ele)
+			index=i;
+	if(index!=-1)
+		arr.splice(index,1);
+}
+
+function getRandomElement(arr){
+	if(arr.length==0)
+		return " ";
+	else
+		return arr[Math.floor(Math.random()*arr.length)];
 }
 
 function redrawEattenSnake(snake,predator){
