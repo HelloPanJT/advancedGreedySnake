@@ -50,8 +50,6 @@ var goDie=function(snakesPool) {
 
 }
 
-
-
 var nextStep=function(nextPos) {
 	this.body.push(posToXY(nextPos));
 	var tailXY = this.body.shift(); //remove the tail first
@@ -436,6 +434,8 @@ var AIsnake=function(name){
 	ai.move=aiNextMove;
 	ai.eatSnake=eatSnake;
 	ai.nextStep=nextStep;
+	ai.trackNum=0;
+	ai.walkRoundNum=0;
 	ai.createSnake=function(){
 		var tryCount=100;
 		var success=false;
@@ -449,17 +449,19 @@ var AIsnake=function(name){
 	ai.track=function(){
 		if(Object.keys(allSnakes).length==0)
 			return;
-		var minDis=INFINITE;
 		var aiHead=getLastElement(this.body);
-		for (var key in allSnakes){
-			var head=getLastElement(allSnakes[key].body);
-			var dis=getDis(aiHead,head);
-			if(dis<minDis){
-				this.prefSnakeName=key;
-				minDis=dis;
+		var priority=[];
+		if(this.trackNum<=30){
+			this.prefSnakeName=(this.trackNum==10?walkRound():persue(aiHead));
+			this.trackNum++;
+		}
+		else{
+			this.walkRound++;
+			if(walkRound>5){
+				walkRound=0;
+				trackNum=0;
 			}
 		}
-		var priority=[];
 		var prefHead=getLastElement(allSnakes[this.prefSnakeName].body);
 		/*select the priority try sequence*/
 		if(prefHead.row<=aiHead.row&&prefHead.col>aiHead.col)
@@ -474,7 +476,6 @@ var AIsnake=function(name){
 			if(i==priority.length){
 				this.goDie(allAiSnakes);
 				curAISnakeNum--;
-				generateAiSnake();
 			}
 			else if(canMove({"row":aiHead.row+priority[i][0],"col":aiHead.col+priority[i][1]})){
 				this.direction=getDirection(priority[i]);
@@ -485,6 +486,31 @@ var AIsnake=function(name){
 	}
 	return ai;
 }
+function walkRound(){
+	var size=Object.keys(allSnakes).length;
+	var rad=Math.floor(Math.random()*size);
+	var i=0;
+	for(var key in allSnakes){
+		if(i==rad)
+			return key;
+		i++;
+	}
+}
+
+function persue(aiHead){
+	var prefSnakeName=" ";
+	var minDis=INFINITE;
+	for (var key in allSnakes){
+			var head=getLastElement(allSnakes[key].body);
+			var dis=getDis(aiHead,head);
+			if(dis<minDis){
+				prefSnakeName=key;
+				minDis=dis;
+			}
+		}
+	return prefSnakeName;
+}
+
 function redrawLeaderBorder(){
 	var data=[];
 	for(var key in allSnakes){
@@ -492,6 +518,7 @@ function redrawLeaderBorder(){
 	}
 	io.sockets.emit('redrawLeaderBorder',data);
 }
+
 function redrawEattenSnake(snake,predator){
 	append=[];
 	snake.body.forEach(function(ele) {append.push(xyToPos(ele.row, ele.col))});
