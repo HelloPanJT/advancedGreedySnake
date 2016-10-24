@@ -448,56 +448,61 @@ var AIsnake=function(name){
 	}
 	ai.track=function(){
 		if(Object.keys(allSnakes).length==0)
-			return;
-		var aiHead=getLastElement(this.body);
-		var priority=[];
-		if(this.trackNum<=30){
-			this.prefSnakeName=(this.trackNum==10?walkRound():persue(aiHead));
-			this.trackNum++;
-		}
+			walkWithoutTarget(this);
 		else{
-			this.walkRound++;
-			if(walkRound>5){
-				walkRound=0;
-				trackNum=0;
+			var priority=[];
+			if(this.trackNum<=30){
+				persue(this);
+				this.trackNum++;
 			}
-		}
-		var prefHead=getLastElement(allSnakes[this.prefSnakeName].body);
-		/*select the priority try sequence*/
-		if(prefHead.row<=aiHead.row&&prefHead.col>aiHead.col)
-			priority=choicePriority.firstQuadrant;
-		else if(prefHead.row<aiHead.row&&prefHead.col<=aiHead.col)
-			priority=choicePriority.secondQuadrant;
-		else if(prefHead.row>=aiHead.row&&prefHead.col<aiHead.col)
-			priority=choicePriority.thirdQuadrant;
-		else 
-			priority=choicePriority.fourthQuadrant;
-		for(var i=0;i<=priority.length;i++){
-			if(i==priority.length){
-				this.goDie(allAiSnakes);
-				curAISnakeNum--;
-			}
-			else if(canMove({"row":aiHead.row+priority[i][0],"col":aiHead.col+priority[i][1]})){
-				this.direction=getDirection(priority[i]);
-				this.move();
-				break;
+			else{
+				this.walkRoundNum++;
+				walkWithoutTarget(this);
+				if(this.walkRoundNum>5){
+					this.walkRoundNum=0;
+					this.trackNum=0;
+				}
 			}
 		}
 	}
 	return ai;
 }
-function walkRound(){
-	var size=Object.keys(allSnakes).length;
+
+function walk(predatator,priority){
+	var head=getLastElement(predatator.body);
+	for(var i=0;i<=priority.length;i++){
+		if(i==priority.length){
+			this.goDie(allAiSnakes);
+			curAISnakeNum--;
+		}
+		else if(canMove({"row":head.row+priority[i][0],"col":head.col+priority[i][1]})){
+			predatator.direction=getDirection(priority[i]);
+			predatator.move();
+			break;
+		}
+	}
+}
+
+function walkWithoutTarget(predatator){
+	var key=getRandomKey(choicePriority);
+	var priority=choicePriority[key];
+	walk(predatator,priority);
+}
+
+function getRandomKey(set){
+	var size=Object.keys(set).length;
 	var rad=Math.floor(Math.random()*size);
 	var i=0;
-	for(var key in allSnakes){
+	for(var key in set){
 		if(i==rad)
 			return key;
 		i++;
 	}
+	return " ";
 }
 
-function persue(aiHead){
+function persue(predatator){
+	var aiHead=getLastElement(predatator.body);
 	var prefSnakeName=" ";
 	var minDis=INFINITE;
 	for (var key in allSnakes){
@@ -508,7 +513,17 @@ function persue(aiHead){
 				minDis=dis;
 			}
 		}
-	return prefSnakeName;
+	var prefHead=getLastElement(allSnakes[prefSnakeName].body);
+		/*select the priority try sequence*/
+	if(prefHead.row<=aiHead.row&&prefHead.col>aiHead.col)
+		priority=choicePriority.firstQuadrant;
+	else if(prefHead.row<aiHead.row&&prefHead.col<=aiHead.col)
+		priority=choicePriority.secondQuadrant;
+	else if(prefHead.row>=aiHead.row&&prefHead.col<aiHead.col)
+		priority=choicePriority.thirdQuadrant;
+	else 
+		priority=choicePriority.fourthQuadrant;
+	walk(predatator,priority);
 }
 
 function redrawLeaderBorder(){
