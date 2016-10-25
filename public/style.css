@@ -32,9 +32,18 @@
 	overflow-y: scroll;
 }
 
-#setName, #lengthRow, #yourSnake  {
-	margin-right: 5px;
+#setName, #lengthRow  {
+	margin-right: 10px;
 	background-color: #000000;
+	border-left: 5px solid #808080;
+	border-bottom: 5px solid #808080;
+}
+
+#yourSnake {
+	margin-right: 10px;
+	background-color: #000000;
+	border-left: 5px solid #808080;
+	border-bottom: 3px solid #808080;
 }
 
 .container-fluid{
@@ -46,13 +55,10 @@
 	color: #FFFFFF;
 	background-color: #000000;
 	margin-right: 10px;
-}
-
-.tdColor{
-	border-right: 1px solid #000000;
-	border-top:1px solid #CCCCCC;
-	height: 10px;
-	width: 30%;
+	border-top: 5px solid #808080;
+	border-bottom: 3px solid #808080;
+	border-left: 5px solid #808080;
+	border-right: 5px solid #808080;
 }
 
 .row{
