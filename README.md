@@ -3,9 +3,12 @@ __Submitted by:__ _team_name_
 
 __Team members:__
 
-- username@umn.edu
-- username@umn.edu
-- ...
+````
+Nanxiang Zhang  : zhan4584@umn.edu
+Jintian Pan     : panxx389@umn.edu
+Gloria Zhang    : zhan2209@umn.edu
+Zheng Sun       : sunxx738@umn.edu
+````
 
 __Heroku URL:__ _url_
 
