@@ -509,16 +509,20 @@ function trakcWithTarget(predatator,prefSnakeName){
 
 function persue(predatator){
 	if(predatator.prefSnakeName==" "){
-		 predatator.prefSnakeName=getRandomElement(snakeNameSet);
-		 deleteElementFromArray(snakeNameSet,predatator.prefSnakeName);
-		if(predatator.prefSnakeName==" "||predatator.walkRoundNum<2){
+		if(predatator.walkRoundNum<2)
 			walkWithoutTarget(predatator);
-			if(predatator.walkRoundNum<2)
-				predatator.walkRoundNum++;
-		}
 		else{
-			predatator.trackNum++;
-			trakcWithTarget(predatator,predatator.prefSnakeName);
+			 predatator.prefSnakeName=getRandomElement(snakeNameSet);
+			 deleteElementFromArray(snakeNameSet,predatator.prefSnakeName);
+			if(predatator.prefSnakeName==" "){
+				walkWithoutTarget(predatator);
+				if(predatator.walkRoundNum<2)
+					predatator.walkRoundNum++;
+			}
+			else{
+				predatator.trackNum++;
+				trakcWithTarget(predatator,predatator.prefSnakeName);
+			}
 		}
 	}
 	else{
