@@ -17,6 +17,8 @@ var rowMove=[-1,0,1];
 var colMove=[-1,0,1];
 var wholeMove=[[1,0],[-1,0],[0,1],[0,-1]];
 var MAX_AISNAKE_NUM=2;
+var WALK_ROUND_NUM=5;
+var TRACK_NUM=20;
 var curAISnakeNum=0;
 var MAX_FOOD_NUMBER = 2;
 var SNAKE_LENGTH =3;
@@ -509,9 +511,9 @@ function trakcWithTarget(predatator,prefSnakeName){
 
 function persue(predatator){
 	if(predatator.prefSnakeName==" "){
-		if(predatator.walkRoundNum<2){
+		if(predatator.walkRoundNum<WALK_ROUND_NUM){
 			walkWithoutTarget(predatator);
-			if(predatator.walkRoundNum<2)
+			if(predatator.walkRoundNum<WALK_ROUND_NUM)
 				predatator.walkRoundNum++;
 		}
 		else{
@@ -519,7 +521,7 @@ function persue(predatator){
 			 deleteElementFromArray(snakeNameSet,predatator.prefSnakeName);
 			if(predatator.prefSnakeName==" "){
 				walkWithoutTarget(predatator);
-				if(predatator.walkRoundNum<2)
+				if(predatator.walkRoundNum<WALK_ROUND_NUM)
 					predatator.walkRoundNum++;
 			}
 			else{
@@ -531,7 +533,7 @@ function persue(predatator){
 	else{
 		predatator.trackNum++;
 		trakcWithTarget(predatator,predatator.prefSnakeName);
-		if(predatator.trackNum>30){
+		if(predatator.trackNum>TRACK_NUM){
 			predatator.trackNum=0;
 			if(allSnakes.hasOwnProperty(predatator.prefSnakeName)){
 				snakeNameSet.push(predatator.prefSnakeName);
