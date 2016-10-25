@@ -180,7 +180,7 @@ MongoClient.connect(mongoURI,function(err,db){
 					res.send('success');
 				});
 				app.post('/play', function(req,res){
-					if (!allSnakes.hasOwnProperty(req.body.username)) {
+					if (!allSnakes.hasOwnProperty(req.body.username)&&Object.keys(allAiSnakes).length<MAX_AISNAKE_NUM) {
 						allSnakes[req.body.username] = new Snake(req.body.username);
 						snakeNameSet.push(req.body.username);
 						redrawLeaderBorder();
@@ -511,9 +511,9 @@ function persue(predatator){
 	if(predatator.prefSnakeName==" "){
 		 predatator.prefSnakeName=getRandomElement(snakeNameSet);
 		 deleteElementFromArray(snakeNameSet,predatator.prefSnakeName);
-		if(predatator.prefSnakeName==" "||predatator.walkRoundNum<5){
+		if(predatator.prefSnakeName==" "||predatator.walkRoundNum<2){
 			walkWithoutTarget(predatator);
-			if(predatator.walkRoundNum<5)
+			if(predatator.walkRoundNum<2)
 				predatator.walkRoundNum++;
 		}
 		else{
