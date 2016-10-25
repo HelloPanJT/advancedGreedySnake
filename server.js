@@ -509,8 +509,11 @@ function trakcWithTarget(predatator,prefSnakeName){
 
 function persue(predatator){
 	if(predatator.prefSnakeName==" "){
-		if(predatator.walkRoundNum<2)
+		if(predatator.walkRoundNum<2){
 			walkWithoutTarget(predatator);
+			if(predatator.walkRoundNum<2)
+				predatator.walkRoundNum++;
+		}
 		else{
 			 predatator.prefSnakeName=getRandomElement(snakeNameSet);
 			 deleteElementFromArray(snakeNameSet,predatator.prefSnakeName);
