@@ -180,7 +180,7 @@ MongoClient.connect(mongoURI,function(err,db){
 					res.send('success');
 				});
 				app.post('/play', function(req,res){
-					if (!allSnakes.hasOwnProperty(req.body.username)&&Object.keys(allAiSnakes).length<MAX_AISNAKE_NUM) {
+					if (!allSnakes.hasOwnProperty(req.body.username)) {
 						allSnakes[req.body.username] = new Snake(req.body.username);
 						snakeNameSet.push(req.body.username);
 						redrawLeaderBorder();
@@ -206,7 +206,7 @@ MongoClient.connect(mongoURI,function(err,db){
             });
           })
           socket.on('createAISnake',function(){
-          	if(curAISnakeNum<MAX_AISNAKE_NUM){
+          	if(&&Object.keys(allAiSnakes).length<=MAX_AISNAKE_NUM){
           		generateAiSnake();
           	}
           })
