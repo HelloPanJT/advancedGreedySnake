@@ -206,7 +206,7 @@ MongoClient.connect(mongoURI,function(err,db){
             });
           })
           socket.on('createAISnake',function(){
-          	if(&&Object.keys(allAiSnakes).length<=MAX_AISNAKE_NUM){
+          	if(Object.keys(allAiSnakes).length<=MAX_AISNAKE_NUM){
           		generateAiSnake();
           	}
           })
