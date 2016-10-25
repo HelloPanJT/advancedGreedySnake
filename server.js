@@ -194,35 +194,36 @@ MongoClient.connect(mongoURI,function(err,db){
 
 				io.sockets.on('connection', function(socket) {
 					socket.on('setUsername', function(data) {
-          	socket.username = data;
-          })
-		  socket.on("getLeaderBorder",function(){
-		  	 redrawLeaderBorder();
-		  })
-          socket.on('message', function (message) {
-            db.collection(msgCollection).find().toArray(
-              function(err, words) {
-                var data = { 'message' : message, 'username': socket.username };
-                socket.broadcast.emit('message', data);
-                db.collection(msgCollection).insert(data, function(err, ids){})
-            });
-          })
-          socket.on('createAISnake',function(){
-          	if(Object.keys(allAiSnakes).length<MAX_AISNAKE_NUM){
-          		generateAiSnake();
-          	}
-          })
-		socket.on('disconnect',function(){
-			var username = socket.username;
-			if (allSnakes.hasOwnProperty(username)) {
-				allSnakes[username].goDie(allSnakes);
+          				socket.username = data;
+          			})
+			    socket.on("getLeaderBorder",function(){
+				  	 redrawLeaderBorder();
+				 })
+	            socket.on('message', function (message) {
+	            	db.collection(msgCollection).find().toArray(
+	               		function(err, words) {
+		                 var data = { 'message' : message, 'username': socket.username };
+		                 socket.broadcast.emit('message', data);
+		                 db.collection(msgCollection).insert(data, function(err, ids){})
+		             });
+	           	})
+		       socket.on('createAISnake',function(){
+			      	 if(Object.keys(allAiSnakes).length<MAX_AISNAKE_NUM){
+			      		 generateAiSnake();
+			      	 }
+		       })
+			   socket.on('disconnect',function(){
+					var username = socket.username;
+					if (allSnakes.hasOwnProperty(username)) {
+						allSnakes[username].goDie(allSnakes);
+						}
+					})
+				})
+			   tick = setInterval(updateState, 300);
+			   AiSnakeTick=setInterval(updateAISnake,200);
 			}
 		})
-				})
-				tick = setInterval(updateState, 300);
-				AiSnakeTick=setInterval(updateAISnake,200);
-			}
-	})}
+	}
 })
 function updateCurSnakeNum(){
 	curAISnakeNum=Object.keys(allAiSnakes).length;
