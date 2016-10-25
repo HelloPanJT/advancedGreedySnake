@@ -17,6 +17,8 @@ var rowMove=[-1,0,1];
 var colMove=[-1,0,1];
 var wholeMove=[[1,0],[-1,0],[0,1],[0,-1]];
 var MAX_AISNAKE_NUM=2;
+var WALK_ROUND_NUM=10;
+var TRACK_NUM=25;
 var curAISnakeNum=0;
 var MAX_FOOD_NUMBER = 2;
 var SNAKE_LENGTH =3;
@@ -217,8 +219,8 @@ MongoClient.connect(mongoURI,function(err,db){
 			}
 		})
 				})
-				tick = setInterval(updateState, 200);
-				AiSnakeTick=setInterval(updateAISnake,300);
+				tick = setInterval(updateState, 300);
+				AiSnakeTick=setInterval(updateAISnake,200);
 			}
 	})}
 })
@@ -509,14 +511,17 @@ function trakcWithTarget(predatator,prefSnakeName){
 
 function persue(predatator){
 	if(predatator.prefSnakeName==" "){
-		if(predatator.walkRoundNum<2)
+		if(predatator.walkRoundNum<WALK_ROUND_NUM){
 			walkWithoutTarget(predatator);
+			if(predatator.walkRoundNum<WALK_ROUND_NUM)
+				predatator.walkRoundNum++;
+		}
 		else{
 			 predatator.prefSnakeName=getRandomElement(snakeNameSet);
 			 deleteElementFromArray(snakeNameSet,predatator.prefSnakeName);
 			if(predatator.prefSnakeName==" "){
 				walkWithoutTarget(predatator);
-				if(predatator.walkRoundNum<2)
+				if(predatator.walkRoundNum<WALK_ROUND_NUM)
 					predatator.walkRoundNum++;
 			}
 			else{
@@ -528,10 +533,11 @@ function persue(predatator){
 	else{
 		predatator.trackNum++;
 		trakcWithTarget(predatator,predatator.prefSnakeName);
-		if(predatator.trackNum>30){
+		if(predatator.trackNum>TRACK_NUM){
 			predatator.trackNum=0;
-			if(allAiSnakes.hasOwnProperty(predatator.prefSnakeName))
+			if(allSnakes.hasOwnProperty(predatator.prefSnakeName)){
 				snakeNameSet.push(predatator.prefSnakeName);
+			}
 			predatator.walkRoundNum=0;
 			predatator.prefSnakeName=" ";
 		}
