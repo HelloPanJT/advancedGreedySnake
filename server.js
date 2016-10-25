@@ -427,7 +427,7 @@ var searchTarget=function(predator,snakesPool,minDis){
 
 var AIsnake=function(name){
 	var ai=new Object();
-	ai.color="black";
+	ai.color="white";
 	ai.username=name;
 	ai.body=[];
 	ai.length=7;

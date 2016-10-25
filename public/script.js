@@ -56,7 +56,7 @@ function paintSnake(color){
 socket.on('redraw', function(data) {
 	if (data.erase) {
 		data.erase.forEach(function(ele) {
-			setGridColor(ele, 'white');
+			setGridColor(ele, 'black');
 		})
 	}
 	if (data.append) {
