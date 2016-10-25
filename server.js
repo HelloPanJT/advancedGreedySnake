@@ -533,8 +533,9 @@ function persue(predatator){
 		trakcWithTarget(predatator,predatator.prefSnakeName);
 		if(predatator.trackNum>30){
 			predatator.trackNum=0;
-			if(allAiSnakes.hasOwnProperty(predatator.prefSnakeName))
+			if(allSnakes.hasOwnProperty(predatator.prefSnakeName)){
 				snakeNameSet.push(predatator.prefSnakeName);
+			}
 			predatator.walkRoundNum=0;
 			predatator.prefSnakeName=" ";
 		}
