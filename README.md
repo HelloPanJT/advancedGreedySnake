@@ -1,13 +1,15 @@
 # Module 2 group project #
-__Submitted by:__ _team_name_
+__Submitted by:__ Today
 
 __Team members:__
+````
+Nanxiang Zhang  : zhan4584@umn.edu
+Jintian Pan     : panxx389@umn.edu
+Gloria Zhang    : zhan2209@umn.edu
+Zheng Sun       : sunxx738@umn.edu
+````
 
-- username@umn.edu
-- username@umn.edu
-- ...
-
-__Heroku URL:__ _url_
+__Heroku URL:__ http://advancedgreedysnake.heroku.com/
 
 __Argument of ambition:__
 _Briefly argue why this was a technically ambitious project_
