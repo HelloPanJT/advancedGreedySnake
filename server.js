@@ -8,7 +8,7 @@ var db_password="panjintian";
 var collectName="AISnakeCollection";
 var clientCollect="ClientCollection";
 var msgCollection = "Messages";
-var snakeNameSet=[]; 
+var snakeNameSet=[];
 var size=20; //this number must be equal to size in script.js
 var dbglobal={};
 var io={};
@@ -158,9 +158,9 @@ MongoClient.connect(mongoURI,function(err,db){
 				var bodyParser = require('body-parser');
 				app.use(bodyParser.json());
 				app.use(bodyParser.urlencoded({ extended: true }));
-				var port=process.env.PORT||5001;
+				var port=process.env.PORT||5002;
 				var server=app.listen(port,function(){
-					console.log('listen on 5001');
+					console.log('listen on 5002');
 				})
 				io=require('socket.io').listen(server);
 				app.get('/',function(req,res){
@@ -498,7 +498,7 @@ function trakcWithTarget(predatator,prefSnakeName){
 			priority=choicePriority.secondQuadrant;
 		else if(prefHead.row>=aiHead.row&&prefHead.col<aiHead.col)
 			priority=choicePriority.thirdQuadrant;
-		else 
+		else
 			priority=choicePriority.fourthQuadrant;
 		walk(predatator,priority);
 	}

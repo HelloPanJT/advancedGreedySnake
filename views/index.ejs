@@ -33,32 +33,44 @@
           Status:
           <table class="table">
             <tr id="setUserNameRow">
-              <td>
-                <form class="form-inline">
-                  <input id="userNameText" type="text" class="form-control" placeholder="Input Username">
-                  <button id="setUserNameBtn" type="button" class="btn btn-info">SetUserName</button>
-                </form>
+              <td id="setName">
+                <div class="form-inline">
+                  <input id="userNameText" type="text"
+                          class="form-control" placeholder="Input Username">
+                  <button id="setUserNameBtn" type="button"
+                          class="btn btn-default">SetUserName</button>
+                </div>
               </td>
             </tr>
+
             <tr id="userNameRow">
               <td>Username:</td>
               <td id="username"></td>
+              <td></td>
+              <td></td>
             </tr>
-            <tr>
+
+            <tr id="lengthRow">
               <td>Length:</td>
               <td id="snakeLength"></td>
+              <td></td>
+              <td></td>
             </tr>
-            <tr>
+
+            <tr id="yourSnake">
               <td>Your Snake:</td>
               <td id="snakeColor">
-                <tr>
-                  <td class="tdColor"></td>
-                  <td class="tdColor"></td>
-                  <td class="tdColor"></td>
-                </tr>
-              </td>
-            </tr>
-          </table>
+               <tr>
+                 <td class="tdColor"></td>
+                 <td class="tdColor"></td>
+                 <td class="tdColor"></td>
+               </tr>
+             </td>
+             <td></td>
+             <td></td>
+           </tr>
+
+         </table>
         </div>
         <div class="row">
           Chat Room:
@@ -71,7 +83,7 @@
           </div>
           <form id="sendMsgRow" class="form-inline">
             <input id="msgText" type="text" class="form-control" placeholder="Text input">
-            <button id="sendMsgBtn" type="button" class="btn btn-info">Send</button>
+            <button id="sendMsgBtn" type="button" class="btn btn-default">Send</button>
           </form>
         </div>
       </div>
