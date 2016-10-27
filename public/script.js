@@ -3,12 +3,9 @@ var username = "";
 var directions = {"37": "left", "38": "up", "39": "right", "40": "down"};
 
 $(document).ready(function(){
-	var size=20;
-
 	initChessBoard();
 	$("#userNameRow").hide();
 	$("#sendMsgRow").hide();
-
 	$("#setUserNameBtn").click(function() {setUsername();});
 	$("#sendMsgBtn").click(function() {sendMessage();});
 	$("#userNameText").keypress(function(event){
@@ -23,36 +20,63 @@ $(document).ready(function(){
 			sendMessage();
 		}
 	});
-})
+	$.post("/getLeaderBorder", {}, function(result){
+		console.log(result);
+	});
+	$.post("/createAISnake", {}, function(result){
+		console.log(result);
+	});
+});
 
 $(document).keydown(function(event) {
-    var key = event.keyCode;
-		if (directions[key]) {
-			$.post("/move", {"cmd": directions[key], "username": username}, function(result){
-				console.log(result);
-			});
-		}
+  var key = event.keyCode;
+	if (directions[key]) {
+		$.post("/move", {"cmd": directions[key], "username": username}, function(result){
+			console.log(result);
+		});
+	}
+});
+
+socket.on('clearstatus', function(data) {
+  if (data == username) {
+		$("#snakeLength").text("");
+		$('#snakeColor').html("");
+	}
+});
+
+socket.on('redrawhistorystatics', function(data) {
+	for (var i = 0; i < Math.min(data.length, 5); i++) {
+		$("#his"+(i+1)+"username").text(data[i].username);
+		$("#his"+(i+1)+"length").text(data[i].length);
+		$("#his"+(i+1)+"mininute").text(data[i].mininute);
+	}
 });
 
 socket.on('message', function(data) {
   addMessage(data['message'], data['username']);
 })
+
 socket.on('redrawLeaderBorder',function(data){
 	data.sort(comparator);
-	$("#LeaderBoardTable").empty();
-	for(var i=0;i<data.length;i++){
+	for(var i = 0; i < 3; i++) {
+		$("#no"+(i+1)+"username").text("");
+		$("#no"+(i+1)+"length").text("");
+	}
+	for(var i=0;i<Math.min(data.length, 3);i++){
 		if(data[i].name==username){
-			console.log(data[i].length);
 			$("#snakeLength").text(data[i].length);
 			paintSnake(data[i].color);
 		}
-		$("#LeaderBoardTable").append("<tr>"+"<td>"+data[i].name+":"+"</td>"+"<td>"+data[i].length+"</td>"+"</tr>");
+		$("#no"+(i+1)+"username").text(data[i].name);
+		$("#no"+(i+1)+"length").text(data[i].length);
 	}
 });
+
 function paintSnake(color){
-	console.log($('.tdColor'));
-	$('.tdColor').css('background-color', color);
+	$('#snakeColor').html("");
+	$('#snakeColor').append("<div style='margin-top: 8px; height:20px; background-color:"+ color + ";'/>");
 }
+
 socket.on('redraw', function(data) {
 	if (data.erase) {
 		data.erase.forEach(function(ele) {
@@ -65,8 +89,7 @@ socket.on('redraw', function(data) {
 		})
 	}
 })
-socket.emit('createAISnake',{});
-socket.emit('getLeaderBorder',{});
+
 function initChessBoard() {
 	$.post("/init", function(result){
 		var board = $('#chessBoard');
@@ -81,23 +104,38 @@ function initChessBoard() {
 		}
 		board.append(tbContent);
 	});
+	scrollToBottom();
+}
+
+function scrollToBottom() {
+	var element = document.getElementById("chatroom");
+	element.scrollTop = element.scrollHeight;
 }
 
 function setUsername() {
-  if ($("#usernameInput").val() != "")
+  if ($("#userNameText").val() != "")
   {
-		username = $("#userNameText").val();
-		$('#username').text(username);
-		$('#sendMsgRow').show();
-		$("#userNameRow").show();
-		$('#setUserNameRow').hide();
-		$('#userSet').hide();
-    socket.emit('setUsername', username);
+		$.post("/setUsername", {"username": $("#userNameText").val()}, function(result){
+			if (result == 'set username success') {
+				username = $("#userNameText").val();
+				$('#username').text(username);
+				$('#sendMsgRow').show();
+				$("#userNameRow").show();
+				$('#setUserNameRow').hide();
+				$('#userSet').hide();
+				socket.emit('setUsername', username);
+			}
+			else {
+				alert('Try another name! :D');
+				$("#userNameText").val("Try another name!");
+			}
+		});
   }
 }
 
 function addMessage(msg, username) {
     $("#chatroom").append('<p>' + username + ' : ' + msg + '</p>');
+		scrollToBottom();
 }
 
 function sendMessage() {
@@ -106,12 +144,14 @@ function sendMessage() {
         var val = $('#msgText').val();
 				if (val === "play") {
 					$.post("/play", {"username": username}, function(result){
+						console.log(result);
 					});
 				}
         else {
-          socket.emit('message', val);
+					$.post("/message", {"username": username, "message": val}, function(result){
+						console.log(result);
+					});
         }
-				addMessage(val, "Me");
         $('#msgText').val('');
 				$('#msgText').blur();
     }

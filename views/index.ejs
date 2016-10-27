@@ -19,56 +19,111 @@
 		<header>
 		</header>
     <div class="row">
-      <div class="col-md-9">
+      <div class="col-md-8">
     		<table id='chessBoard' cellpadding="0" cellspacing="0">
     		</table>
-      </div>
-      <div class="col-md-3">
-        <div class="row">
-          LeaderBoard:
-          <table class="table" id="LeaderBoardTable">
+        <div id="borderPanel">
+          <table class="table" id="HistoryStatics">
+            <tr>
+              <td>No.</td>
+              <td>Username</td>
+              <td>Length</td>
+              <td>Time</td>
+            </tr>
+            <tr id="his1">
+              <td>#1</td>
+              <td id="his1username"></td>
+              <td id="his1length"></td>
+              <td id="his1mininute"></td>
+            </tr>
+            <tr id="his2">
+              <td>#2</td>
+              <td id="his2username"></td>
+              <td id="his2length"></td>
+              <td id="his2mininute"></td>
+            </tr>
+            <tr id="his3">
+              <td>#3</td>
+              <td id="his3username"></td>
+              <td id="his3length"></td>
+              <td id="his3mininute"></td>
+            </tr>
+            <tr id="his4">
+              <td>#4</td>
+              <td id="his4username"></td>
+              <td id="his4length"></td>
+              <td id="his4mininute"></td>
+            </tr>
+            <tr id="his5">
+              <td>#5</td>
+              <td id="his5username"></td>
+              <td id="his5length"></td>
+              <td id="his5mininute"></td>
+            </tr>
           </table>
         </div>
+      </div>
+      <div class="col-md-4">
         <div class="row">
-          Status:
-          <table class="table">
-
-            <tr id="setUserNameRow">
-              <td id="setName">
-                <div class="form-inline">
-                  <input id="userNameText" type="text"
-                          class="form-control" placeholder="Input Username">
-                  <button id="setUserNameBtn" type="button"
-                          class="btn btn-default">SetUserName</button>
-                </div>
-              </td>
-            </tr>
-
-            <tr id="userNameRow">
-              <td>Username:</td>
-              <td id="username"></td>
-            </tr>
-
-            <tr id="lengthRow">
-              <td>Length:</td>
-              <td id="snakeLength"></td>
-            </tr>
-
-            <tr id="yourSnake">
-              <td>Your Snake:</td>
-              <td id="snakeColor">
-               <tr>
-                 <td class="tdColor"></td>
-                 <td class="tdColor"></td>
-               </tr>
-             </td>
-           </tr>
-
-         </table>
+          <h3>LeaderBoard:</h3>
+          <div id="borderPanel">
+            <table class="table" id="LeaderBoardTable">
+              <tr>
+                <td>No.</td>
+                <td>Username</td>
+                <td>Length</td>
+              </tr>
+              <tr id="no1">
+                <td>#1</td>
+                <td id="no1username"></td>
+                <td id="no1length"></td>
+              </tr>
+              <tr id="no2">
+                <td>#2</td>
+                <td id="no2username"></td>
+                <td id="no2length"></td>
+              </tr>
+              <tr id="no3">
+                <td>#3</td>
+                <td id="no3username"></td>
+                <td id="no3length"></td>
+              </tr>
+            </table>
+          </div>
         </div>
         <div class="row">
-          Chat Room:
-          <div class="pre-panel panel-default pre-scrollable">
+          <h3>Status:</h3>
+          <div id="borderPanel">
+            <table class="table" id="statusTable">
+              <tr id="setUserNameRow">
+                <td id="setName">
+                  <input id="userNameText" type="text"
+                    class="form-control" placeholder="Input Username">
+                </td>
+                <td>
+                  <button id="setUserNameBtn" type="button"
+                    class="btn btn-default pull-right">SetUserName</button>
+                </td>
+              </tr>
+              <tr id="userNameRow">
+                <td>Username:</td>
+                <td id="username"></td>
+              </tr>
+              <tr id="lengthRow">
+                <td>Length:</td>
+                <td id="snakeLength"></td>
+              </tr>
+              <tr id="yourSnake">
+                <td>Your Snake:</td>
+                <td id="snakeColor">
+               </td>
+             </tr>
+            </table>
+          </div>
+        </div>
+        <div class="row">
+          <h3>Chat Room:</h3>
+          <div class="pre-panel panel-default">
             <div id="chatroom" class="panel-body">
               <% messages.forEach(function(msg){ %>
                   <p> <%= msg.username %>  :  <%= msg.message %> </p>

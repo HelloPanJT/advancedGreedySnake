@@ -8,8 +8,8 @@ var db_password="panjintian";
 var collectName="AISnakeCollection";
 var clientCollect="ClientCollection";
 var msgCollection = "Messages";
+var historyCollection = "userLog";
 var snakeNameSet=[];
-var size=20; //this number must be equal to size in script.js
 var dbglobal={};
 var io={};
 var time={};
@@ -20,10 +20,11 @@ var MAX_AISNAKE_NUM=2;
 var WALK_ROUND_NUM=10;
 var TRACK_NUM=25;
 var curAISnakeNum=0;
-var MAX_FOOD_NUMBER = 2;
+var MAX_FOOD_NUMBER = 10;
 var SNAKE_LENGTH =3;
-var BOARD_PARAMS = {"height": 40, "width": 60};
+var BOARD_PARAMS = {"height": 45, "width": 55};
 var allSnakes = {};
+var usernameSet = new Set();
 var snakeGrids = new Set(); //all the girds occupied by snake, saved grid ID "25"
 var foodGrids = new Set(); //all the grids occupied by food, saved grid ID "25"
 var colorPool = ["SALMON", "HOTPINK", "ORANGERED", "GOLD", "MAGENTA", "SPRINGGREEN", "LIGHTSEAGREEN", "CYAN", "TURQUOISE", "STEELBLUE", "ROYALBLUE", "WHEAT", "SANDYBROWN"];
@@ -46,12 +47,13 @@ var goDie=function(snakesPool) {
 	colorPool.push(this.color);
 	deleteElementFromArray(snakeNameSet,this.username);
 	var d=new Date();
-	d.endTime=d.getTime();
+	this.endTime=d.getTime();
 	if(snakesPool==allSnakes)
 		insertLog(snakesPool[this.username]);
 	delete snakesPool[this.username];
 	redrawLeaderBorder();
-
+	clearStatus(this.username);
+	redrawHistoryStatics();
 }
 
 var nextStep=function(nextPos) {
@@ -84,11 +86,11 @@ var nextMove=function() {
 		nextPosXY = {"row": head.row, "col": head.col + 1};
 	}
 	nextPos = xyToPos(nextPosXY.row, nextPosXY.col);
-    var targetRes=this.getToAllSnakeDis(allSnakes,allAiSnakes);
-    if(targetRes.minDis==1){
-    	this.eatSnake(targetRes.closetSnake,targetRes.closetPool);
-    }
-    else{
+  var targetRes=this.getToAllSnakeDis(allSnakes,allAiSnakes);
+  if(targetRes.minDis==1){
+  	this.eatSnake(targetRes.closetSnake,targetRes.closetPool);
+  }
+  else{
 		if (foodGrids.has(nextPos)) {
 			this.eat(nextPos);
 		}
@@ -138,9 +140,6 @@ function Snake(username) {
 	io.sockets.emit('redraw', {"erase": [], "append": append, "color": this.color});
 }
 
-
-
-
 //1. player set username
 //2. player type "play" to init a snake (will send a /play post from client), snake will appear and move toward right direction
 //3. player change the direction (will send a /move post from client)
@@ -152,7 +151,7 @@ MongoClient.connect(mongoURI,function(err,db){
 		db.authenticate(db_user,db_password,function(err,result){
 			if(err)
 				throw err;
-			else{
+			else {
 				globalDB=db;
 				test = new Set();
 				app.use(express.static('public'));
@@ -172,14 +171,40 @@ MongoClient.connect(mongoURI,function(err,db){
 					})
 				});
 				app.post('/init', function(req,res){
+					redrawHistoryStatics();
 					res.send(BOARD_PARAMS);
+				});
+				app.post('/createAISnake', function(req,res){
+					if(Object.keys(allAiSnakes).length<MAX_AISNAKE_NUM) {
+						generateAiSnake();
+						res.send('success');
+					}
+					else {
+						res.send('AI Snake max');
+					}
+				});
+				app.post('/getLeaderBorder', function(req,res){
+					redrawLeaderBorder();
+					res.send('Leaderboard update success');
+				});
+				app.post('/setUsername', function(req,res){
+					if (usernameSet.has(req.body.username)) {
+						res.send('set username fail');
+					}
+					else {
+						usernameSet.add(req.body.username);
+						res.send('set username success');
+					}
 				});
 				app.post('/move', function(req,res){
 					var conflictDirection = {"up": "down", "down": "up", "left": "right", "right": "left"};
 					if (allSnakes.hasOwnProperty(req.body.username) && req.body.cmd != conflictDirection[allSnakes[req.body.username].direction]) {
 						allSnakes[req.body.username].direction = req.body.cmd;
+						res.send('move success');
 					}
-					res.send('success');
+					else {
+						res.send('move failed');
+					}
 				});
 				app.post('/play', function(req,res){
 					if (!allSnakes.hasOwnProperty(req.body.username)) {
@@ -188,41 +213,35 @@ MongoClient.connect(mongoURI,function(err,db){
 						redrawLeaderBorder();
 						var d=new Date();
 						allSnakes[req.body.username].startTime=d.getTime();
+						res.send('init snake success');
 					}
-					res.send('success');
+					else {
+						res.send('init snake fail');
+					}
 				});
-
+				app.post('/message', function(req,res){
+					db.collection(msgCollection).find().toArray(function(err, words) {
+						var data = { 'message' : req.body.message, 'username': req.body.username };
+						io.sockets.emit('message', data);
+						db.collection(msgCollection).insert(data, function(err, ids){});
+					});
+				});
 				io.sockets.on('connection', function(socket) {
 					socket.on('setUsername', function(data) {
-          				socket.username = data;
-          			})
-			    socket.on("getLeaderBorder",function(){
-				  	 redrawLeaderBorder();
-				 })
-	            socket.on('message', function (message) {
-	            	db.collection(msgCollection).find().toArray(
-	               		function(err, words) {
-		                 var data = { 'message' : message, 'username': socket.username };
-		                 socket.broadcast.emit('message', data);
-		                 db.collection(msgCollection).insert(data, function(err, ids){})
-		             });
-	           	})
-		       socket.on('createAISnake',function(){
-			      	 if(Object.keys(allAiSnakes).length<MAX_AISNAKE_NUM){
-			      		 generateAiSnake();
-			      	 }
-		       })
-			   socket.on('disconnect',function(){
-					var username = socket.username;
-					if (allSnakes.hasOwnProperty(username)) {
-						allSnakes[username].goDie(allSnakes);
+						socket.username = data;
+					})
+					socket.on('disconnect', function() {
+						var username = socket.username;
+						usernameSet.delete(username);
+						if (allSnakes.hasOwnProperty(username)) {
+							allSnakes[username].goDie(allSnakes);
 						}
 					})
 				})
-			   tick = setInterval(updateState, 300);
-			   AiSnakeTick=setInterval(updateAISnake,200);
+				tick = setInterval(updateState, 200);
+				AiSnakeTick=setInterval(updateAISnake, 300);
 			}
-		})
+		});
 	}
 })
 function updateCurSnakeNum(){
@@ -553,6 +572,28 @@ function redrawLeaderBorder(){
 	io.sockets.emit('redrawLeaderBorder',data);
 }
 
+function redrawHistoryStatics() {
+	MongoClient.connect(mongoURI,function(err,db){
+		if(err)
+			console.log('connect error');
+		else{
+			db.authenticate(db_user,db_password,function(err,result){
+				if(err)
+					throw err;
+				else {
+					db.collection(historyCollection).find().sort({length: -1}).toArray(function(err, words) {
+						io.sockets.emit('redrawhistorystatics', words);
+					});
+				}
+			});
+		}
+	});
+}
+
+function clearStatus(username) {
+	io.sockets.emit('clearstatus', username);
+}
+
 function deleteElementFromArray(arr,ele){
 	if(arr.length==0)
 		return;
@@ -577,6 +618,6 @@ function redrawEattenSnake(snake,predator){
 	io.sockets.emit('redraw', {"erase": [], "append": append, "color": predator.color});
 }
 function insertLog(snake){
-	var data={username:snake.username,length:snake.length,mininute:Math.round((snake.endTime-snake.endTime)/60000)};
+	var data={username:snake.username,length:snake.length,mininute:Math.round((snake.endTime-snake.startTime)/60000)};
 	globalDB.collection("userLog").insert(data,function(err,ids){});
 }
