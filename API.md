@@ -1,5 +1,6 @@
-__API Documentation__
-We have implemented seven api here
+# API Documentation
+
+We have implemented <b><u>seven API</u></b> here
 ```
 curl --data '' http://advancedgreedysnake.heroku.com/init
 ```

@@ -9,17 +9,61 @@ Gloria Zhang    : zhan2209@umn.edu
 Zheng Sun       : sunxx738@umn.edu
 ````
 
-__Heroku URL:__ https://advancedgreedysnakelast.herokuapp.com/ 
+__Heroku URL:__ https://advancedgreedysnakelast.herokuapp.com/
 
-__Argument of ambition:__
+## Argument of ambition:
 _Briefly argue why this was a technically ambitious project_
-1. This game can include many people, every person controls a colored snake. When two snakes hit head by head, the snake who attacks first (move first) will win this battle. When one snake's head hits other snake body, the first snake will go die.  
+<!---
+1. This game can include many people, every person controls a colored snake. When two snakes hit head by head, the snake who attacks first (move first) will win this battle. When one snake's head hits other snake body, the first snake will go die.
 2. There are several AI snakes (the number of them can be configured when starting the system). The AI snakes won't eat user's snake actively, they just stop users from eating food. The maximum number of AI snakes are fixed, but it will increase as new player join in and this will continue until the number of snake satisfies the maximum number. The behavior of AI snakes is interesting. The concept looks like this: for each user snake, it has a lock. No matter which AI snake gets this lock, that AI snake will have right to chase this user snake. Of course, the AI snake won't eat this user snake actively. After chasing several steps, this AI snake will give up this user snake. Then this AI snake will randomly move several steps and then it will check if it can get another user snake. The collision between AI snakes and user snakes is the same as collision between user snakes.
 3. The leading board will be flush dynamically, which is based on the snake's length. Also, we have a chat room. We also has a statics board to display the player's history data.  
+-->
 
-__Argument of execution:__
+###### 1. AI snake
+  We designed the AI snake, which is automatic created by our program. The AI snake will improve the Playability of our game.  And there are several interesting functions for our AI snake:
+* The AI snake won't eat food, won't get longer.
+* The porpose of AI snake is to kill the User snake. Once the User snake's head touch the body of AI snake, the User snake will die. So does the AI snake.
+* The AI snake could be eatten by the User snake, when the User snake longer than the AI snake and both the User snake and AI snake touched head-by-head.
+* The AI snake will try to kill User snake, but won't eat the User snake. The AI snake could be eatten by the User snake.
+* The AI snake will give up and seek a new User snake to kill. If the AI snake didn't kill its target User snake within 30-steps, it will walk around 5 circles and pick the other User snake randomly.
+* The AI snake will only try to kill the User snake which is targeted by the other AI snake.
+
+###### 2. User name detected
+  We detecte the username input. If the new commer input the same username with any current user in the game, the new commer will receive a alert to ask them to try the other username.
+
+###### 3. Multiple user with colorfull snake
+  We define a database store some color properties. When the new user into the play model, they will get a snake with a random color. In this case, different users will have different color snake. This is easy for the users to tell Relations between the enemy and the friends. Also this makes the gameboard UI more friendly.
+
+###### 4. Watching model  [Two steps watching]
+  We defined two watching model, which is easier for the users to watch in both way:
+* The first watching model (for new user): Once user open our [gameboard](https://advancedgreedysnakelast.herokuapp.com/) , they will under the 1st watching model. In this case, users especially new commer, they don't need to do anything, but watching the current game.
+* The second watching model (for current/old user):
+  <br> <b>1.</b> Once after the user input their username, they will under the 2nd watching model.
+  <br> <b>2.</b> Once the user snake died, they will under the second watching model.
+  <br> In this case, the old user they can still stay and watch the game even they've already died and also if they still not decided join the game or not, they won't be kiked out of the game chat room.
+###### 5. Statistic model [Sorted score board]
+
+###### 6. Seven API
+
+
+## Argument of execution:
 _Briefly argue why this was a well executed project_
+
+###### 1. open this page https://advancedgreedysnakelast.herokuapp.com/
+
+###### 2.
+
+###### 3.
+
+###### 4.
+
+###### 5.
+
+###### 6.
+
+<!--
 All functionalities described above have been implemented. We have tested it with some people, and the people enjoy the game. After testing, we didn't found bugs.
+-->
 
 ## Description ##
 For this module you will be making a multi-user, online game using Express,
