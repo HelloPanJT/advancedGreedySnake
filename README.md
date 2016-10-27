@@ -9,7 +9,7 @@ Gloria Zhang    : zhan2209@umn.edu
 Zheng Sun       : sunxx738@umn.edu
 ````
 
-__Heroku URL:__ http://advancedgreedysnake.heroku.com/
+__Heroku URL:__ https://advancedgreedysnakelast.herokuapp.com/ 
 
 __Argument of ambition:__
 _Briefly argue why this was a technically ambitious project_
