@@ -185,7 +185,7 @@ MongoClient.connect(mongoURI,function(err,db){
 				});
 				app.post('/getLeaderBorder', function(req,res){
 					redrawLeaderBorder();
-					res.send('Leaderboard update success');
+					res.send('Leaderboard get success');
 				});
 				app.post('/setUsername', function(req,res){
 					if (usernameSet.has(req.body.username)) {
@@ -224,6 +224,7 @@ MongoClient.connect(mongoURI,function(err,db){
 						var data = { 'message' : req.body.message, 'username': req.body.username };
 						io.sockets.emit('message', data);
 						db.collection(msgCollection).insert(data, function(err, ids){});
+						res.send('message update success');
 					});
 				});
 				io.sockets.on('connection', function(socket) {
