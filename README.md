@@ -38,7 +38,7 @@ _Briefly argue why this was a technically ambitious project_
   <br> <b>1.</b> Once after the user input their username, they will under the 2nd watching model.
   <br> <b>2.</b> Once the user snake died, they will under the second watching model.
   <br> In this case, the old user they can still stay and watch the game even they've already died and also if they still not decided join the game or not, they won't be kicked out of the game chat room.
-###### 5. Statistic model [<b>Sorted</b> score board]
+###### 5. Statistic model [Sorted score board]
   We made the Statistic model as a "Highest score board". Once the user snake died, their final score will be recorded into our database. And sorted automatic by the "length" property.
 ###### 6. Seven API
   We will give more detail about this part in API.md
@@ -47,9 +47,9 @@ _Briefly argue why this was a technically ambitious project_
 ## Argument of execution:
 _Briefly argue why this was a well executed project_
 
-###### 1. Open our [game board](https://advancedgreedysnakelast.herokuapp.com/)
+###### 1. [Game board](https://advancedgreedysnakelast.herokuapp.com/) display
 
-You will see there are several food and one(or two) AI snake already in the play area, they just walk back and force without any targets. But pay attention to the following rules:
+You will see there are several food and one(or two) AI snake already in the play area, they just walk back and force without any targets. But pay attention to <b><u>the rules </u></b>:
 * The AI snake won't eat food, won't get longer.
 * The longer snake can eat the shorter snake when they touched head-by-head.
 * The AI snake could be eaten by the User snake.
@@ -60,19 +60,32 @@ You will see there are several food and one(or two) AI snake already in the play
 
 ###### 2. Set Username
 * The user can input any username but not the same with the username in the same game board. The length of username could be [1,+∞].
-* If you input a username and receive the alert, just go ahead to input the other new username.
+* If you input a username and receive the alert, just go ahead to input the other different username.
 
-##### 3. Chat room
+###### 3. Chat room
 * The user can input the word "play"(must in lower case) to create a new snake to start the game.
 * The user can chat use the chat room, just type any words, but not a single "play".
 * The chat room will keep the chat history, the user can scroll up to check the previous chat history.
 
-##### 4. End of game
+###### 4. Control the snake
+ The user could use keyboard arrow keys to control the snake.
+ * ↑: The snake will go up
+ * ↓: The snake will go down
+ * ←: The snake will go left
+ * →: The snake will go right
+
+###### 5. End of game
   Once the snake die, the current round for the current user ends. If the user still want to play, they can just input "play" to create a new snake with another color. Game will be end in the following cases:
 * Eaten by the other User snake, game end.
 * Hit the other snake's body, game end.
 * Hit the border, game end.
-* Refresh the page will also make your current game end, but it will bring you back to the watching model, which is the same with the start game board. 
+* Refresh the page will also make your current game end, but it will bring you back to the watching model, which is the same with the start game board.
+
+###### 6. Check score
+  * During the Game.
+  <br> The user can see their current score in the leaderboard in the up right corner.  
+  * After the Game
+  <br> When the game end, the user can check their score for the game in the leaderboard, too. And if they get a really good score, they can also check the bottom left corner about the history highest score.
 
 <!--
 All functionalities described above have been implemented. We have tested it with some people, and the people enjoy the game. After testing, we didn't found bugs.
