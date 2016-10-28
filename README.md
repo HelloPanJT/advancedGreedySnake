@@ -18,8 +18,8 @@ _Briefly argue why this was a technically ambitious project_
 
   We designed the AI snake, which is automatic created by our program. Using the short path algorithm, the AI snake will calculate the shortest path to kill the User snake. The AI snake will improve the Playability of our game. And there are several interesting functions for our AI snake:
 * The purpose of AI snake is to kill the User snake. Once the User snake's head touch the body of AI snake, the User snake will die. So does the AI snake.
-* The AI snake will only try to kill the User snake which is not targeted by the other AI snake yet.
-* The AI snake will give up and seek a new User snake to kill. If the AI snake didn't kill its target User snake within 30-steps, it would walk around 5 circles and then to try to get another snake if any other user snake available.
+* The AI snake will only try to kill the User snake which is not targeted by the other AI snake yet. Each user snake has a lock, no matter which AI snake gets this lock, that AI snake will have the priority to seek this user snake.
+* The AI snake will give up and seek another User snake to kill. If the AI snake didn't kill its target User snake within 30-steps, it would walk around 5 circles and then to try to get another snake if any other user snake available.
 * The maximum number of AI snakes is fixed, the number of AI snake can be configured in the code, which is defined as MAX_AISNAKE_NUM. If needed, we could change it larger or smaller. It will increase as new player join the game until the number of snake satisfies the maximum number.
 * An AI snake will never kill itself unless there is no available next step, e.g., its head is stuck by other snakes or the boarder corner or itself.
 * An user snake will be only targeted by one AI Snake once.
@@ -65,7 +65,7 @@ You will see there are several food and one(or two) AI snake already in the play
 * The user can input any username but not the same with the username in the same game board. The length of username could be [1,+∞].
 * If you input a username and receive the alert, just go ahead to input the other different username.
 
-###### 3. Chat room
+###### 3. Chat room & Start game
 * The user can input the word "play"(must in lower case) to create a new snake to start the game.
 * The user can chat use the chat room, just type any words, but not a single "play".
 * The chat room will keep the chat history, the user can scroll up to check the previous chat history.
@@ -89,10 +89,6 @@ You will see there are several food and one(or two) AI snake already in the play
   <br> The user can see their current score in the leaderboard in the up right corner.  
   * After the Game
   <br> When the game end, the user can check their score for the game in the leaderboard, too. And if they get a really good score, they can also check the bottom left corner about the history highest score.
-
-<!--
-All functionalities described above have been implemented. We have tested it with some people, and the people enjoy the game. After testing, we didn't found bugs.
--->
 
 ## Description ##
 For this module you will be making a multi-user, online game using Express,
