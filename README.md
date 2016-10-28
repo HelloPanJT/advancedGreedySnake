@@ -38,8 +38,10 @@ _Briefly argue why this was a technically ambitious project_
   <br> <b>1.</b> Once after the user input their username, they will under the 2nd watching model.
   <br> <b>2.</b> Once the user snake died, they will under the second watching model.
   <br> In this case, the old user they can still stay and watch the game even they've already died and also if they still not decided join the game or not, they won't be kicked out of the game chat room.
+
 ###### 5. Statistic model [Sorted score board]
   We made the Statistic model as a "Highest score board". Once the user snake died, their final score will be recorded into our database. And sorted automatic by the "length" property.
+  
 ###### 6. Seven API
   We will give more detail about this part in API.md
 
