@@ -13,17 +13,17 @@ __Heroku URL:__ https://advancedgreedysnakelast.herokuapp.com/
 
 ## Argument of ambition:
 _Briefly argue why this was a technically ambitious project_
-<!---
-1. This game can include many people, every person controls a colored snake. When two snakes hit head by head, the snake who attacks first (move first) will win this battle. When one snake's head hits other snake body, the first snake will go die.
-2. There are several AI snakes (the number of them can be configured when starting the system). The AI snakes won't eat user's snake actively, they just stop users from eating food. The maximum number of AI snakes are fixed, but it will increase as new player join in and this will continue until the number of snake satisfies the maximum number. The behavior of AI snakes is interesting. The concept looks like this: for each user snake, it has a lock. No matter which AI snake gets this lock, that AI snake will have right to chase this user snake. Of course, the AI snake won't eat this user snake actively. After chasing several steps, this AI snake will give up this user snake. Then this AI snake will randomly move several steps and then it will check if it can get another user snake. The collision between AI snakes and user snakes is the same as collision between user snakes.
-3. The leading board will be flush dynamically, which is based on the snake's length. Also, we have a chat room. We also has a statics board to display the player's history data.  
--->
 
 ###### 1. AI snake
-  We designed the AI snake, which is automatic created by our program. Using the short path algorithm, the AI snake will calculate the shortest path to kill the User snake. The AI snake will improve the Playability of our game.  And there are several interesting functions for our AI snake:
+
+  We designed the AI snake, which is automatic created by our program. Using the short path algorithm, the AI snake will calculate the shortest path to kill the User snake. The AI snake will improve the Playability of our game. And there are several interesting functions for our AI snake:
 * The purpose of AI snake is to kill the User snake. Once the User snake's head touch the body of AI snake, the User snake will die. So does the AI snake.
-* The AI snake will give up and seek a new User snake to kill. If the AI snake didn't kill its target User snake within 30-steps, it will walk around 5 circles and pick the other User snake randomly.
-* The AI snake will only try to kill the User snake which is targeted by the other AI snake.
+* The AI snake will only try to kill the User snake which is not targeted by the other AI snake yet.
+* The AI snake will give up and seek a new User snake to kill. If the AI snake didn't kill its target User snake within 30-steps, it would walk around 5 circles and then to try to get another snake if any other user snake available.
+* The maximum number of AI snakes is fixed, the number of AI snake can be configured in the code, which is defined as MAX_AISNAKE_NUM. If needed, we could change it larger or smaller. It will increase as new player join the game until the number of snake satisfies the maximum number.
+* An AI snake will never kill itself unless there is no available next step, e.g., its head is stuck by other snakes or the boarder corner or itself.
+* An user snake will be only targeted by one AI Snake at one time.
+* The AI snake always use the shortest available path to track the client snake.
 
 ###### 2. User name detected
   We detect the username input. If the new comer input the same username with any current user in the game, the new comer will receive a alert to ask them to try the other username.
@@ -38,13 +38,15 @@ _Briefly argue why this was a technically ambitious project_
   <br> <b>1.</b> Once after the user input their username, they will under the 2nd watching model.
   <br> <b>2.</b> Once the user snake died, they will under the second watching model.
   <br> In this case, the old user they can still stay and watch the game even they've already died and also if they still not decided join the game or not, they won't be kicked out of the game chat room.
-
 ###### 5. Statistic model [Sorted score board]
   We made the Statistic model as a "Highest score board". Once the user snake died, their final score will be recorded into our database. And sorted automatic by the "length" property.
-  
-###### 6. Seven API
-  We will give more detail about this part in API.md
 
+###### 6. Game Board Performance
+* We figured out an effective interactive framework for our app.
+<br> * For the server side, we only notify client side to update certain grids of our chessboard. <br> *  For the client side, it only draws some grids with new color or erase grids with black.<br> So this framework makes our game do not need to redraw the whole chessboard every time. This is also make our game precess more fluency, without any refresh.
+
+###### 7. Seven API
+  We will give more detail about this part in API.md
 
 ## Argument of execution:
 _Briefly argue why this was a well executed project_
