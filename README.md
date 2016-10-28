@@ -22,8 +22,7 @@ _Briefly argue why this was a technically ambitious project_
 * The AI snake will give up and seek a new User snake to kill. If the AI snake didn't kill its target User snake within 30-steps, it would walk around 5 circles and then to try to get another snake if any other user snake available.
 * The maximum number of AI snakes is fixed, the number of AI snake can be configured in the code, which is defined as MAX_AISNAKE_NUM. If needed, we could change it larger or smaller. It will increase as new player join the game until the number of snake satisfies the maximum number.
 * An AI snake will never kill itself unless there is no available next step, e.g., its head is stuck by other snakes or the boarder corner or itself.
-* An user snake will be only targeted by one AI Snake at one time.
-* The AI snake always use the shortest available path to track the client snake.
+* An user snake will be only targeted by one AI Snake once.
 
 ###### 2. User name detected
   We detect the username input. If the new comer input the same username with any current user in the game, the new comer will receive a alert to ask them to try the other username.
@@ -35,15 +34,15 @@ _Briefly argue why this was a technically ambitious project_
   We defined two watching model, which is easier for the users to watch in both way:
 * The first watching model (for new user): Once user open our [game board](https://advancedgreedysnakelast.herokuapp.com/) , they will under the 1st watching model. In this case, users especially new comer, they don't need to do anything, but watching the current game.
 * The second watching model (for current/old user):
-  <br> <b>1.</b> Once after the user input their username, they will under the 2nd watching model.
-  <br> <b>2.</b> Once the user snake died, they will under the second watching model.
+  <br> <b>* </b> Once after the user input their username, they will under the 2nd watching model.
+  <br> <b>* </b> Once the user snake died, they will under the second watching model.
   <br> In this case, the old user they can still stay and watch the game even they've already died and also if they still not decided join the game or not, they won't be kicked out of the game chat room.
 ###### 5. Statistic model [Sorted score board]
   We made the Statistic model as a "Highest score board". Once the user snake died, their final score will be recorded into our database. And sorted automatic by the "length" property.
 
 ###### 6. Game Board Performance
 * We figured out an effective interactive framework for our app.
-<br> * For the server side, we only notify client side to update certain grids of our chessboard. <br> *  For the client side, it only draws some grids with new color or erase grids with black.<br> So this framework makes our game do not need to redraw the whole chessboard every time. This is also make our game precess more fluency, without any refresh.
+<br> <b>* </b> For the server side, we only notify client side to update certain grids of our chessboard. <br> <b>* </b> For the client side, it only draws some grids with new color or erase grids with black.<br> So this framework makes our game do not need to redraw the whole chessboard every time. This is also make our game precess more fluency, without any refresh.
 
 ###### 7. Seven API
   We will give more detail about this part in API.md
