@@ -20,46 +20,59 @@ _Briefly argue why this was a technically ambitious project_
 -->
 
 ###### 1. AI snake
-  We designed the AI snake, which is automatic created by our program. The AI snake will improve the Playability of our game.  And there are several interesting functions for our AI snake:
-* The AI snake won't eat food, won't get longer.
-* The porpose of AI snake is to kill the User snake. Once the User snake's head touch the body of AI snake, the User snake will die. So does the AI snake.
-* The AI snake could be eatten by the User snake, when the User snake longer than the AI snake and both the User snake and AI snake touched head-by-head.
-* The AI snake will try to kill User snake, but won't eat the User snake. The AI snake could be eatten by the User snake.
+  We designed the AI snake, which is automatic created by our program. Using the short path algorithm, the AI snake will calculate the shortest path to kill the User snake. The AI snake will improve the Playability of our game.  And there are several interesting functions for our AI snake:
+* The purpose of AI snake is to kill the User snake. Once the User snake's head touch the body of AI snake, the User snake will die. So does the AI snake.
 * The AI snake will give up and seek a new User snake to kill. If the AI snake didn't kill its target User snake within 30-steps, it will walk around 5 circles and pick the other User snake randomly.
 * The AI snake will only try to kill the User snake which is targeted by the other AI snake.
 
 ###### 2. User name detected
-  We detecte the username input. If the new commer input the same username with any current user in the game, the new commer will receive a alert to ask them to try the other username.
+  We detect the username input. If the new comer input the same username with any current user in the game, the new comer will receive a alert to ask them to try the other username.
 
-###### 3. Multiple user with colorfull snake
-  We define a database store some color properties. When the new user into the play model, they will get a snake with a random color. In this case, different users will have different color snake. This is easy for the users to tell Relations between the enemy and the friends. Also this makes the gameboard UI more friendly.
+###### 3. Multiple user with colorful snake
+  We define a database store some color properties. When the new user into the play model, they will get a snake with a random color. In this case, different users will have different color snake. This is easy for the users to tell Relations between the enemy and the friends. Also this makes the game board UI more friendly.
 
-###### 4. Watching model  [Two steps watching]
+###### 4. Watching model  [<b> Two</b> steps watching]
   We defined two watching model, which is easier for the users to watch in both way:
-* The first watching model (for new user): Once user open our [gameboard](https://advancedgreedysnakelast.herokuapp.com/) , they will under the 1st watching model. In this case, users especially new commer, they don't need to do anything, but watching the current game.
+* The first watching model (for new user): Once user open our [game board](https://advancedgreedysnakelast.herokuapp.com/) , they will under the 1st watching model. In this case, users especially new comer, they don't need to do anything, but watching the current game.
 * The second watching model (for current/old user):
   <br> <b>1.</b> Once after the user input their username, they will under the 2nd watching model.
   <br> <b>2.</b> Once the user snake died, they will under the second watching model.
-  <br> In this case, the old user they can still stay and watch the game even they've already died and also if they still not decided join the game or not, they won't be kiked out of the game chat room.
-###### 5. Statistic model [Sorted score board]
-
+  <br> In this case, the old user they can still stay and watch the game even they've already died and also if they still not decided join the game or not, they won't be kicked out of the game chat room.
+###### 5. Statistic model [<b>Sorted</b> score board]
+  We made the Statistic model as a "Highest score board". Once the user snake died, their final score will be recorded into our database. And sorted automatic by the "length" property.
 ###### 6. Seven API
+  We will give more detail about this part in API.md
 
 
 ## Argument of execution:
 _Briefly argue why this was a well executed project_
 
-###### 1. open this page https://advancedgreedysnakelast.herokuapp.com/
+###### 1. Open our [game board](https://advancedgreedysnakelast.herokuapp.com/)
 
-###### 2.
+You will see there are several food and one(or two) AI snake already in the play area, they just walk back and force without any targets. But pay attention to the following rules:
+* The AI snake won't eat food, won't get longer.
+* The longer snake can eat the shorter snake when they touched head-by-head.
+* The AI snake could be eaten by the User snake.
+* The User snake can be killed by the AI snake, and the AI snake can be killed by the User snake.
+* The AI snake will try to kill User snake, but won't eat the User snake.
+* The snake which touches the other snake's body, it will die.
+* The more "food" the snake eat, the longer the snake will be.
 
-###### 3.
+###### 2. Set Username
+* The user can input any username but not the same with the username in the same game board. The length of username could be [1,+∞].
+* If you input a username and receive the alert, just go ahead to input the other new username.
 
-###### 4.
+##### 3. Chat room
+* The user can input the word "play"(must in lower case) to create a new snake to start the game.
+* The user can chat use the chat room, just type any words, but not a single "play".
+* The chat room will keep the chat history, the user can scroll up to check the previous chat history.
 
-###### 5.
-
-###### 6.
+##### 4. End of game
+  Once the snake die, the current round for the current user ends. If the user still want to play, they can just input "play" to create a new snake with another color. Game will be end in the following cases:
+* Eaten by the other User snake, game end.
+* Hit the other snake's body, game end.
+* Hit the border, game end.
+* Refresh the page will also make your current game end, but it will bring you back to the watching model, which is the same with the start game board. 
 
 <!--
 All functionalities described above have been implemented. We have tested it with some people, and the people enjoy the game. After testing, we didn't found bugs.
