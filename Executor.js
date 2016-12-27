@@ -4,6 +4,7 @@ var ColorProvider = require('./ColorProvider');
 var Initiator = require('./Initiator');
 var Messager = require('./Messager').Messager;
 
+
 const command = require('./CommandSC').CommandSC;
 
 var Executor = function(io) {
@@ -17,8 +18,9 @@ var Executor = function(io) {
 
 Executor.prototype.execute = function(type, name, dir) {
   if (type == command.CREATE_SNAKE) {
-  	this.SnakeManager.addSnake('client', name);
+  	var status = this.SnakeManager.addSnake('client', name);
   	this.BoardManagerInst.generateFood();
+    return status;
   } else if (type == command.CHANGE_DIR) {
   	this.SnakeManager.changeDir(name, dir);
   } else if (type == command.GET_CURRENTDATA) {

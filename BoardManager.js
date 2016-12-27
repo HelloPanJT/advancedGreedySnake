@@ -86,7 +86,8 @@ BoardManager.prototype.canEat = function(pos) {
 }
 
 BoardManager.prototype.getUnusedPlace = function(len, color) {
-  while (true) {
+  var tryCount = 100;
+  while (tryCount > 0) {
 	  var pos = UtilityInst.getRandomInt(0, this.BoardParams.width * this.BoardParams.height - 1);
 	  var posXY = UtilityInst.num2RC(pos);
 	  var body = [];
@@ -107,7 +108,9 @@ BoardManager.prototype.getUnusedPlace = function(len, color) {
 	    this.drawer.draw(numBody, [], color);
 	    return body;
 	  }
+    tryCount--;
   }
+  return [];
 }
 
 BoardManager.prototype.generateFood = function() {

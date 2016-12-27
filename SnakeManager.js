@@ -4,6 +4,7 @@ var AISnakeParams = require('./AISnakeParams').AISnakeParams;
 const ClientSnakeParams= require('./ClientSnakeParams').ClientSnakeParams;
 const Utility = require('./Utility').Utility;
 var MAX_AISNAKE = AISnakeParams.MAX_AISNAKE;
+var MAX_CLIENT_LIMIT = ClientSnakeParams.MAX_CLIENTNUM;
 
 var SnakeManager = function(BoardMangager, ColorProvider) {
   self = this;
@@ -14,6 +15,7 @@ var SnakeManager = function(BoardMangager, ColorProvider) {
   this.AISnakePool = {};
   this.avaAIName = [];
   this.curAISnakeNum = 0;
+  this.curCliSnakeNum = 0;
   this.clientTick = setInterval(function() {
     self.moveClientSnake();
   }, 500);
@@ -43,7 +45,7 @@ SnakeManager.prototype.addName = function(name) {
 
 SnakeManager.prototype.addSnake = function(type, name) {
   if (this.alreadyExist(type, name)) {
-  	return false;
+  	return 'nameDup';
   }
 
   var color = this.ColorProvider.provideOneColor();
@@ -56,9 +58,15 @@ SnakeManager.prototype.addSnake = function(type, name) {
     this.curAISnakeNum++;
   }
   var body = this.BoardMangager.getUnusedPlace(ClientSnakeParams.initLen, color);
-  this.clientSnakePool[name] = new ClientSnake(name, body, color);
-  this.avaSnakeName.push(name);
-  this.provideInfo('add');
+  if (this.curCliSnakeNum > MAX_CLIENT_LIMIT || body.length == 0) {
+    return 'crowded';
+  } else {
+    this.clientSnakePool[name] = new ClientSnake(name, body, color);
+    this.avaSnakeName.push(name);
+    this.provideInfo('add');
+    this.curCliSnakeNum++;
+    return 'success';
+  }
 }
 
 SnakeManager.prototype.provideInfo = function(type) {
@@ -95,6 +103,7 @@ SnakeManager.prototype.killSnake = function(type, name) {
     this.ColorProvider.addOneColor(color);
     this.eraseClientInfo(name);
     this.provideInfo('kill');
+    this.curCliSnakeNum--;
   }
 }
 

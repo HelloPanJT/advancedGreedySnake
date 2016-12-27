@@ -52,11 +52,8 @@ var startServer = function() {
   })
 
   app.post('/play', function(req, res) {
-    if (ExecutorInst.execute(commandsc.CREATE_SNAKE, req.body.username)) {
-  	  res.send('success');
-    } else {
-      res.send('fail');
-    }
+    var status = ExecutorInst.execute(commandsc.CREATE_SNAKE, req.body.username);
+  	res.send(status);
   })
 
   app.post('/message', function(req, res){

@@ -133,6 +133,11 @@ function sendMessage() {
     var val = $('#msgText').val();
 	if (val === "play") {
 	  $.post("/play", {"username": username}, function(result){
+	  	if (result == 'nameDup') {
+	  	  alert('name already exist');
+	  	} else if (result == 'crowded') {
+	  	  alert('the room is too crowded');
+	  	}
 	  });
 	} else {
 	  $.post("/message", {"username": username, "message": val}, function(result){
@@ -152,5 +157,5 @@ function setGridColor(pos, color) {
 }
 
 function comparator(a,b){
-  b.length-a.length;
+  return b.length-a.length;
 }
