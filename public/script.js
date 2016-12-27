@@ -70,12 +70,12 @@ function paintSnake(color){
 }
 
 socket.on('redraw', function(data) {
-  if (data.erase != 0) {
+  if (data.erase.length != 0) {
 	data.erase.forEach(function(ele) {
 	  setGridColor(ele, 'black');
     })
   }
-  if (data.append != 0) {
+  if (data.append.length != 0) {
 	data.append.forEach(function(ele) {
 	  setGridColor(ele, data.color);
     })

@@ -49,6 +49,7 @@ SnakeManager.prototype.addSnake = function(type, name) {
   }
 
   var color = this.ColorProvider.provideOneColor();
+
   if (this.curAISnakeNum < MAX_AISNAKE) {
     var aiName = this.getOneName();
     var body = this.BoardMangager.getUnusedPlace(AISnakeParams.initLen, color);
@@ -57,15 +58,18 @@ SnakeManager.prototype.addSnake = function(type, name) {
                                              AISnakeParams.TRACK_NUM);
     this.curAISnakeNum++;
   }
-  var body = this.BoardMangager.getUnusedPlace(ClientSnakeParams.initLen, color);
-  if (this.curCliSnakeNum > MAX_CLIENT_LIMIT || body.length == 0) {
-    return 'crowded';
-  } else {
+  var body = [];
+  if (this.curCliSnakeNum < MAX_CLIENT_LIMIT) {
+    body = this.BoardMangager.getUnusedPlace(ClientSnakeParams.initLen, color);
+  } 
+  if (body.length != 0) {
     this.clientSnakePool[name] = new ClientSnake(name, body, color);
     this.avaSnakeName.push(name);
     this.provideInfo('add');
     this.curCliSnakeNum++;
     return 'success';
+  } else {
+    return 'crowded';
   }
 }
 

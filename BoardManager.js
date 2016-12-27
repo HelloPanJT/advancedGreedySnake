@@ -114,17 +114,18 @@ BoardManager.prototype.getUnusedPlace = function(len, color) {
 }
 
 BoardManager.prototype.generateFood = function() {
-  var foods = [];
   if (this.foodGrids.size < this.BoardParams.MAX_FOOD_NUMBER) {
 	  var gridSize = this.foodGrids.size;
 	  for (var i = 0; i < (this.BoardParams.MAX_FOOD_NUMBER - gridSize); i++) {
-	    while (true) {
+      var tryCount = 300;
+	    while (tryCount > 0) {
 	      var pos = UtilityInst.getRandomInt(0, this.BoardParams.width * this.BoardParams.height - 1);
 	      if (!this.foodGrids.has(pos) && !this.snakeGrids.has(pos)) {
           var posxy = UtilityInst.num2RC(pos);
 		      this.add(posxy, 'food', 'GOLD');
 		      break;
 	      }
+        tryCount--;
 	    }
     }
   }
