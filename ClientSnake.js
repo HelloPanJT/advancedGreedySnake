@@ -1,15 +1,15 @@
 var Snake = require('./Snake');
 var command = require('./Command');
+const snakeStat = require('./SnakeStatus').SnakeStatus;
+const bodyChanType = require('./BodyChangeType').BodyChangeType;
 
 function ClientSnake(username, body, color) {
 	this.snake = new Snake(username, body, color);
-	this.startTime = "";
-	this.endTime = "";
 	this.direction = command.DOWN;
 }
 
 ClientSnake.prototype.eat = function(pos, BoardManager) {
-  this.snake.changeBody(pos, 'eat', BoardManager);
+  this.snake.changeBody(pos, bodyChanType.EAT, BoardManager);
   BoardManager.generateFood();
 }
 
@@ -26,14 +26,14 @@ ClientSnake.prototype.getStatus = function() {
 ClientSnake.prototype.move = function(BoardManager) {
   var nextPos = this.snake.getNextPos(this.direction);
   if (!BoardManager.canMove(nextPos)) {
-  	this.snake.status = 'die';
-    return 'die';
+  	this.snake.status = snakeStat.DIE;
+    return snakeStat.DIE;
   } else if (BoardManager.canEat(nextPos)) {
   	this.eat(nextPos, BoardManager);
-    return 'eat';
+    return bodyChanType.EAT;
   } else {
   	this.snake.changeBody(nextPos, 'move', BoardManager);
-    return 'move';
+    return bodyChanType.MOVE;
   }
 }
 

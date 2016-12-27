@@ -1,10 +1,12 @@
 var drawer = require('./Drawer').Drawer;
 var UtilityInst = require('./Utility').Utility;
-var boardParams = require('./BoardParams').boardParams;
+const boardParams = require('./BoardParams').boardParams;
+const gridType = require('./GridType').GridType;
+const foodParams = require('./FoodParameter').FoodParameter;
 var BoardManager = function(io) {
   this.snakeGrids = new Set(); 
   this.foodGrids = new Set();
-  this.BoardParams = boardParams;
+  this.boardParams = boardParams;
   this.drawer = new drawer(io);
   this.canMove = canMove;
 }
@@ -12,9 +14,9 @@ var BoardManager = function(io) {
 var canMove = function(pos) {
   var num = UtilityInst.RC2Num(pos);
   if (pos.row < 0
-  	      || pos.row >= this.BoardParams.height
+  	      || pos.row >= this.boardParams.HEIGHT
   	      || pos.col < 0
-  	      || pos.col >= this.BoardParams.width
+  	      || pos.col >= this.boardParams.WIDTH
   	      || this.snakeGrids.has(num)) {
   	return false;
   }
@@ -27,7 +29,7 @@ BoardManager.prototype.sendInfo = function(type, data) {
 
 BoardManager.prototype.sendCurrentData = function() {
   var foodData = UtilityInst.setToArray(this.foodGrids);
-  this.drawer.draw(foodData, [], 'GOLD');
+  this.drawer.draw(foodData, [], foodParams.COLOR);
 }
 
 BoardManager.prototype.getDrawer = function() {
@@ -55,7 +57,7 @@ BoardManager.prototype.removeBody = function(body, type) {
 BoardManager.prototype.removePos = function(pos, type) {
   var num = UtilityInst.RC2Num(pos);
   var data = UtilityInst.eleToArray(num);
-  if (type == 'snake') {
+  if (type == gridType.SNAKE) {
   	this.snakeGrids.delete(num);
   } else {
   	this.foodGrids.delete(num);
@@ -66,7 +68,7 @@ BoardManager.prototype.removePos = function(pos, type) {
 
 
 BoardManager.prototype.add = function(pos, type, color) {
-  if (type == 'snake') {
+  if (type == gridType.SNAKE) {
     this.addPos(pos, this.snakeGrids, color);
   } else {
   	this.addPos(pos, this.foodGrids, color);
@@ -88,7 +90,7 @@ BoardManager.prototype.canEat = function(pos) {
 BoardManager.prototype.getUnusedPlace = function(len, color) {
   var tryCount = 100;
   while (tryCount > 0) {
-	  var pos = UtilityInst.getRandomInt(0, this.BoardParams.width * this.BoardParams.height - 1);
+	  var pos = UtilityInst.getRandomInt(0, this.boardParams.WIDTH * this.boardParams.HEIGHT - 1);
 	  var posXY = UtilityInst.num2RC(pos);
 	  var body = [];
 	  var i = 5; //5 ununsed grid before the head
@@ -97,7 +99,7 @@ BoardManager.prototype.getUnusedPlace = function(len, color) {
 	    i--;
 	  }
     var self = this;
-	  if (body.every(function(ele) {return (self.canMove(ele) && !self.foodGrids.has(UtilityInst.RC2Num(ele)))})) {
+	  if (body.every(function(ele) {return (self.canMove(ele) && !self.canEat(ele))})) {
       body = body.slice(5, body.length).reverse();
 	    var numBody = [];
 	    body.forEach(function(ele) {
@@ -114,15 +116,16 @@ BoardManager.prototype.getUnusedPlace = function(len, color) {
 }
 
 BoardManager.prototype.generateFood = function() {
-  if (this.foodGrids.size < this.BoardParams.MAX_FOOD_NUMBER) {
+
+  if (this.foodGrids.size < this.boardParams.MAX_FOOD_NUMBER) {
 	  var gridSize = this.foodGrids.size;
-	  for (var i = 0; i < (this.BoardParams.MAX_FOOD_NUMBER - gridSize); i++) {
-      var tryCount = 300;
+	  for (var i = 0; i < (this.boardParams.MAX_FOOD_NUMBER - gridSize); i++) {
+      var tryCount = 100;
 	    while (tryCount > 0) {
-	      var pos = UtilityInst.getRandomInt(0, this.BoardParams.width * this.BoardParams.height - 1);
+	      var pos = UtilityInst.getRandomInt(0, this.boardParams.WIDTH * this.boardParams.HEIGHT - 1);
 	      if (!this.foodGrids.has(pos) && !this.snakeGrids.has(pos)) {
           var posxy = UtilityInst.num2RC(pos);
-		      this.add(posxy, 'food', 'GOLD');
+		      this.add(posxy, gridType.FOOD, foodParams.COLOR);
 		      break;
 	      }
         tryCount--;

@@ -1,3 +1,4 @@
+var constantSet = require('./ConstantSet').ConstantSet;
 var boardParams = require('./BoardParams').boardParams;
 var Utility = function() {
 }
@@ -12,12 +13,12 @@ Utility.prototype.getRandomKey = function(set){
 	  }
 	  i++;
   }
-  return " ";
+  return constantSet.NONE;
 }
 
 Utility.prototype.getRandomElement = function(array) {
   if (array.length == 0) {
-    return '';
+    return constantSet.NONE;
   }
   var index = this.getRandomInt(0, array.length - 1);
   for (var i = 0; i <= index; i++) {
@@ -28,11 +29,11 @@ Utility.prototype.getRandomElement = function(array) {
 }
 
 Utility.prototype.num2RC = function(num) {
-  return {row: Math.floor(num / boardParams.width), col: num % boardParams.height}
+  return {row: Math.floor(num / boardParams.WIDTH), col: num % boardParams.HEIGHT}
 }
 
 Utility.prototype.RC2Num = function(pos) {
-  return pos.row * boardParams.width + pos.col;
+  return pos.row * boardParams.WIDTH + pos.col;
 }
 
 Utility.prototype.eleToArray = function(ele) {
@@ -49,14 +50,14 @@ Utility.prototype.getLastElement = function(array) {
   if (array.length > 0) {
     return array[array.length - 1];
   }
-  return '';
+  return constantSet.NONE;
 }
 
 Utility.prototype.getFirstElement = function(array) {
   if (array.length > 0) {
     return array[0];
   }
-  return '';
+  return constantSet.NONE;
 }
 
 // generate a Integer between min and max(included min and max)

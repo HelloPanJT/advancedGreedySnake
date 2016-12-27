@@ -1,3 +1,5 @@
+const snakeStat = require('./SnakeStatus').SnakeStatus;
+const bodyChanType = require('./BodyChangeType').BodyChangeType;
 var Drawer = function(io) {
   this.io = io;
 }
@@ -7,9 +9,11 @@ Drawer.prototype.draw = function(appPos, erasePos, color) {
 }
 
 Drawer.prototype.drawInfo = function(type, data) {
-  if (type == 'die') {
+  if (type == snakeStat.DIE) {
   	this.io.sockets.emit('clearstatus', data);
-  } else if (type == 'eat' || type == 'add' || 'kill') {
+  } else if (type == bodyChanType.EAT 
+  	         || type == bodyChanType.ADD 
+  	         || type == bodyChanType.KILL) {
   	this.io.sockets.emit('redrawLeaderBorder', data);
   }
 }

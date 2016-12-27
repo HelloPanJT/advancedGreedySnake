@@ -1,6 +1,9 @@
 var Utility = require('./Utility').Utility;
 var Command = require('./Command');
 var Snake = require('./Snake');
+const snakeStat = require('./SnakeStatus').SnakeStatus;
+const constantSet = require('./ConstantSet').ConstantSet;
+const bodyChanType = require('./BodyChangeType').BodyChangeType;
 var choicePriority = {
 	firstQuadrant:[[0,1],[-1,0],[1,0],[0,-1]],// preyRow<=airow&&precol>aicol
 	secondQuadrant:[[-1,0],[0,-1],[1,0],[0,1]],//preyRow<airow&&preycol<=aicol
@@ -10,7 +13,7 @@ var choicePriority = {
 
 var AIsnake = function(name, body, color, walkRoundNum, trackNum){
 	this.snake = new Snake(name, body, color);
-	this.prefSnakeName = " ";
+	this.prefSnakeName = constantSet.NONE;
 	this.trackNum = 0;
 	this.walkRoundNum = 0;
 	this.WALK_ROUND_NUM = walkRoundNum;
@@ -27,9 +30,9 @@ AIsnake.prototype.walkWithSuggestPriority = function(BoardManager, priority){
   	}
 
 	if (i == priority.length){
-	  this.snake.status = 'die';
+	  this.snake.status = snakeStat.DIE;
 	} else if (BoardManager.canMove(pos) && !BoardManager.canEat(pos)){
-	  this.snake.changeBody(pos, 'move', BoardManager);
+	  this.snake.changeBody(pos, bodyChanType.MOVE, BoardManager);
 	  break;
 	}
   }
@@ -41,10 +44,10 @@ AIsnake.prototype.walkWithoutTarget = function(BoardManager, commands) {
   while (true) {
     var nextPos = this.snake.getNextPos(commands[next]);
     if (BoardManager.canMove(nextPos) && !BoardManager.canEat(nextPos)) {
-	  this.snake.changeBody(nextPos, 'move', BoardManager);
+	  this.snake.changeBody(nextPos, bodyChanType.MOVE, BoardManager);
 	  break;
     } else if ((next + 1) % commands.length == start) {
-      this.snake.status = 'die';
+      this.snake.status = snakeStat.DIE;
       break;
     }
     next = (next + 1) % commands.length;
@@ -76,22 +79,22 @@ AIsnake.prototype.getStatus = function() {
 
 AIsnake.prototype.nextAction = function(BoardManager, avaSnakeName, csSnakePool) {
   commands = Command.getAllCommand();
-  if (this.prefSnakeName == '') {
+  if (this.prefSnakeName == constantSet.NONE) {
 	if (this.walkRoundNum < this.WALK_ROUND_NUM) {
 	  this.walkWithoutTarget(BoardManager, commands);
 	  this.walkRoundNum++;
 	} 
 	else {
 	  this.prefSnakeName = Utility.getRandomElement(avaSnakeName);
-	  if (this.prefSnakeName != '') {
+	  if (this.prefSnakeName != constantSet.NONE) {
 	  	Utility.deleteElement(avaSnakeName, this.prefSnakeName);
 	  }
-	  if (this.prefSnakeName != '' && csSnakePool.hasOwnProperty(this.prefSnakeName)) {
+	  if (this.prefSnakeName != constantSet.NONE && csSnakePool.hasOwnProperty(this.prefSnakeName)) {
 	    this.trackWithTarget(BoardManager, csSnakePool[this.prefSnakeName]);
 	    this.trackNum++;
 	  } 
 	  else{
-	  	this.prefSnakeName = '';
+	  	this.prefSnakeName = constantSet.NONE;
 		this.walkWithoutTarget(BoardManager, commands);
 		if (this.walkRoundNum < this.WALK_ROUND_NUM) {
 		  this.walkRoundNum++;
@@ -104,7 +107,7 @@ AIsnake.prototype.nextAction = function(BoardManager, avaSnakeName, csSnakePool)
 	  this.trackNum++;
 	  this.trackWithTarget(BoardManager, csSnakePool[this.prefSnakeName]);
 	} else {
-	  this.prefSnakeName = '';
+	  this.prefSnakeName = constantSet.NONE;
 	  this.walkRoundNum = 0;
 	}
 
@@ -114,7 +117,7 @@ AIsnake.prototype.nextAction = function(BoardManager, avaSnakeName, csSnakePool)
 		avaSnakeName.push(this.prefSnakeName);
 	  }
 	  this.walkRoundNum = 0;
-	  this.prefSnakeName = '';
+	  this.prefSnakeName = constantSet.NONE;
 	}
   }
 }

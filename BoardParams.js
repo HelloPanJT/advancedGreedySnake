@@ -1,6 +1,6 @@
 var boardParams = {
-  height: 30,
-  width: 45,
+  HEIGHT: 30,
+  WIDTH: 45,
   MAX_FOOD_NUMBER: 10
 }
 

@@ -86,10 +86,10 @@ function initChessBoard() {
   $.post("/init", function(result){
     var board = $('#chessBoard');
 	var tbContent = "";
-	for (var row = 0; row < result.height; row++) {
+	for (var row = 0; row < result.HEIGHT; row++) {
 	  tbContent += '<tr>';
-	  for (var col = 0; col < result.width; col++){
-		var pos = xyToPos(row, col, result.width);
+	  for (var col = 0; col < result.WIDTH; col++){
+		var pos = xyToPos(row, col, result.WIDTH);
 		tbContent += '<td id="' + pos +'"></td>';
 	  }
 	tbContent+='</tr>';

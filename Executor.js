@@ -3,7 +3,7 @@ var BoardManager = require('./BoardManager').BoardManager;
 var ColorProvider = require('./ColorProvider');
 var Initiator = require('./Initiator');
 var Messager = require('./Messager').Messager;
-
+const snakeType = require('./SnakeType').SnakeType;
 
 const command = require('./CommandSC').CommandSC;
 
@@ -18,7 +18,7 @@ var Executor = function(io) {
 
 Executor.prototype.execute = function(type, name, dir) {
   if (type == command.CREATE_SNAKE) {
-  	var status = this.SnakeManager.addSnake('client', name);
+  	var status = this.SnakeManager.addSnake(snakeType.CLIENT, name);
   	this.BoardManagerInst.generateFood();
     return status;
   } else if (type == command.CHANGE_DIR) {
@@ -32,7 +32,7 @@ Executor.prototype.execute = function(type, name, dir) {
     } 
     return true;
   } else if (type == command.DELETE_USERNAME) {
-    this.SnakeManager.killSnake('clientSnake', name);
+    this.SnakeManager.killSnake(snakeType.CLIENT, name);
     this.userNameManager.remove(name);
   } else if (type == command.SEND_MESSAGE) {
     this.MessagerInst.sendMessage(name);

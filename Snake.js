@@ -1,11 +1,13 @@
 var command = require('./Command');
-
+var snakeStat = require('./SnakeStatus').SnakeStatus;
+var bodyChanType = require('./BodyChangeType').BodyChangeType;
+const gridType = require('./GridType').GridType;
 var Snake = function(name, body, color) {
   this.name = name;
   this.body = body;
   this.length = body.length;
   this.color = color;
-  this.status = 'alive';
+  this.status = snakeStat.ALIVE;
 }
 
 Snake.prototype.showBody = function() {
@@ -15,14 +17,14 @@ Snake.prototype.showBody = function() {
   }
 }
 Snake.prototype.changeBody = function(pos, type, BoardManager) {
-  if (type === "move") {
+  if (type === bodyChanType.MOVE) {
     tail = this.body.pop();
-    BoardManager.remove(tail, 'snake');
+    BoardManager.remove(tail, gridType.SNAKE);
   } else{
-    BoardManager.remove(pos, 'food');
+    BoardManager.remove(pos, gridType.FOOD);
   }
   this.body.splice(0, 0, pos);
-  BoardManager.add(pos, 'snake', this.color);
+  BoardManager.add(pos, gridType.SNAKE, this.color);
 }
 
 Snake.prototype.getNextPos = function(direction) {

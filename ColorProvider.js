@@ -1,8 +1,7 @@
 
 var ColorProvider = function() {
-  this.colorPool = ["SALMON", "HOTPINK", "ORANGERED", 
-                  "GOLD", "MAGENTA", "SPRINGGREEN", 
-                  "LIGHTSEAGREEN", "CYAN", "TURQUOISE", 
+  this.colorPool = ["SALMON", "HOTPINK", "GOLD", "MAGENTA",
+                   "SPRINGGREEN", "LIGHTSEAGREEN", "CYAN", "TURQUOISE", 
                   "STEELBLUE", "ROYALBLUE", "WHEAT", "SANDYBROWN"];
 
 }

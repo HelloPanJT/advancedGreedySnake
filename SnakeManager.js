@@ -3,9 +3,12 @@ var ClientSnake = require('./ClientSnake')
 var AISnakeParams = require('./AISnakeParams').AISnakeParams;
 const ClientSnakeParams= require('./ClientSnakeParams').ClientSnakeParams;
 const Utility = require('./Utility').Utility;
-var MAX_AISNAKE = AISnakeParams.MAX_AISNAKE;
-var MAX_CLIENT_LIMIT = ClientSnakeParams.MAX_CLIENTNUM;
-
+const MAX_AISNAKE = AISnakeParams.MAX_AISNAKE;
+const MAX_CLIENT_LIMIT = ClientSnakeParams.MAX_CLIENTNUM;
+const snakeType = require('./SnakeType');
+const snakeStat = require('./SnakeStatus').SnakeStatus;
+const gridType = require('./GridType').GridType;
+const bodyChanType = require('./BodyChangeType').BodyChangeType;
 var SnakeManager = function(BoardMangager, ColorProvider) {
   self = this;
   this.BoardMangager = BoardMangager;
@@ -52,20 +55,21 @@ SnakeManager.prototype.addSnake = function(type, name) {
 
   if (this.curAISnakeNum < MAX_AISNAKE) {
     var aiName = this.getOneName();
-    var body = this.BoardMangager.getUnusedPlace(AISnakeParams.initLen, color);
-    this.AISnakePool[aiName] = new AISnake(aiName, body, color, 
+    var body = this.BoardMangager.getUnusedPlace(AISnakeParams.INITLEN, AISnakeParams.COLOR);
+    this.AISnakePool[aiName] = new AISnake(aiName, body, AISnakeParams.COLOR, 
                                              AISnakeParams.WALK_ROUND_NUM, 
                                              AISnakeParams.TRACK_NUM);
     this.curAISnakeNum++;
   }
   var body = [];
   if (this.curCliSnakeNum < MAX_CLIENT_LIMIT) {
-    body = this.BoardMangager.getUnusedPlace(ClientSnakeParams.initLen, color);
+    body = this.BoardMangager.getUnusedPlace(ClientSnakeParams.INITLEN, color);
   } 
   if (body.length != 0) {
+   
     this.clientSnakePool[name] = new ClientSnake(name, body, color);
     this.avaSnakeName.push(name);
-    this.provideInfo('add');
+    this.provideInfo(bodyChanType.ADD);
     this.curCliSnakeNum++;
     return 'success';
   } else {
@@ -79,7 +83,7 @@ SnakeManager.prototype.provideInfo = function(type) {
 }
 
 SnakeManager.prototype.eraseClientInfo = function(name) {
-  this.BoardMangager.sendInfo('die', name);
+  this.BoardMangager.sendInfo(snakeStat.DIE, name);
 }
 
 var packSnakeInfo = function(snakePool) {
@@ -93,26 +97,26 @@ var packSnakeInfo = function(snakePool) {
 }
 
 SnakeManager.prototype.killSnake = function(type, name) {
-  if (type == 'AISnake' && this.AISnakePool.hasOwnProperty(name)) {
+  if (type == snakeType.AI && this.AISnakePool.hasOwnProperty(name)) {
   	var body = this.AISnakePool[name].snake.body;
-  	this.BoardMangager.removeBody(body, 'snake');
+  	this.BoardMangager.removeBody(body, gridType.SNAKE);
     delete this.AISnakePool[name];
     this.curAISnakeNum--;
     this.addName(name);
-  } else if (type == 'clientSnake' && this.clientSnakePool.hasOwnProperty(name)){
+  } else if (type == snakeType.CLIENT && this.clientSnakePool.hasOwnProperty(name)){
   	var body = this.clientSnakePool[name].snake.body;
     var color = this.clientSnakePool[name].snake.color;
-  	this.BoardMangager.removeBody(body, 'snake');
+  	this.BoardMangager.removeBody(body, gridType.SNAKE);
   	delete this.clientSnakePool[name];
     this.ColorProvider.addOneColor(color);
     this.eraseClientInfo(name);
-    this.provideInfo('kill');
+    this.provideInfo(bodyChanType.KILL);
     this.curCliSnakeNum--;
   }
 }
 
 SnakeManager.prototype.alreadyExist = function(type, name) {
-  if (type == 'AISnake') {
+  if (type == snakeType.AI) {
   	return this.AISnakePool.hasOwnProperty(name);
   } else {
   	return this.clientSnakePool.hasOwnProperty(name);
@@ -130,11 +134,11 @@ SnakeManager.prototype.moveClientSnake = function() {
   var shouldUpdate = false;
   for (var key in this.clientSnakePool) {
     var action = this.clientSnakePool[key].move(this.BoardMangager);
-    if (this.clientSnakePool[key].getStatus() != 'alive') {
-      this.killSnake('clientSnake', key);
+    if (this.clientSnakePool[key].getStatus() != snakeStat.ALIVE) {
+      this.killSnake(snakeType.CLIENT, key);
       Utility.deleteElement(this.avaSnakeName, key);
     }
-    if (action == 'eat') {
+    if (action == bodyChanType.EAT) {
       shouldUpdate = true;
     }
   }
@@ -161,8 +165,8 @@ function drawPool(pool, drawer) {
 SnakeManager.prototype.moveAISnake = function() {
   for (var key in this.AISnakePool) {
     this.AISnakePool[key].nextAction(this.BoardMangager, this.avaSnakeName, this.clientSnakePool);
-    if (this.AISnakePool[key].getStatus() != 'alive') {
-      this.killSnake('AISnake', key);
+    if (this.AISnakePool[key].getStatus() != snakeStat.ALIVE) {
+      this.killSnake(snakeType.AI, key);
     }
   }
 }

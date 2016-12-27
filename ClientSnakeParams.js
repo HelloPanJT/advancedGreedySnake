@@ -1,6 +1,6 @@
 
 var ClientSnakeParams = {
-  initLen: 4,
+  INITLEN: 4,
   MAX_CLIENTNUM: 6
 }
 
