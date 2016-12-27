@@ -58,6 +58,12 @@ var startServer = function() {
       res.send('fail');
     }
   })
+
+  app.post('/message', function(req, res){
+    ExecutorInst.execute(commandsc.SEND_MESSAGE, 
+                         {message: req.body.message, 
+                          username: req.body.username});
+  })
 }
 
 startServer();

@@ -2,11 +2,13 @@ var SnakeManager = require('./SnakeManager');
 var BoardManager = require('./BoardManager').BoardManager;
 var ColorProvider = require('./ColorProvider');
 var Initiator = require('./Initiator');
+var Messager = require('./Messager').Messager;
 
 const command = require('./CommandSC').CommandSC;
 
 var Executor = function(io) {
   this.BoardManagerInst = new BoardManager(io);
+  this.MessagerInst = new Messager(io);
   var ColorProviderInst = new ColorProvider();
   this.SnakeManager = new SnakeManager(this.BoardManagerInst, ColorProviderInst);
   this.initiator = new Initiator(this.SnakeManager, this.BoardManagerInst);
@@ -30,7 +32,9 @@ Executor.prototype.execute = function(type, name, dir) {
   } else if (type == command.DELETE_USERNAME) {
     this.SnakeManager.killSnake('clientSnake', name);
     this.userNameManager.remove(name);
-  }else {
+  } else if (type == command.SEND_MESSAGE) {
+    this.MessagerInst.sendMessage(name);
+  } else {
   	return 'unknow command';
   }
 }
