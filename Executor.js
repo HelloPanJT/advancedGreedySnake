@@ -9,7 +9,7 @@ var Executor = function(io) {
   this.BoardManagerInst = new BoardManager(io);
   var ColorProviderInst = new ColorProvider();
   this.SnakeManager = new SnakeManager(this.BoardManagerInst, ColorProviderInst);
-  this.Initiator = new Initiator(this.SnakeManager, this.BoardManagerInst);
+  this.initiator = new Initiator(this.SnakeManager, this.BoardManagerInst);
   this.userNameManager = require('./UserNameManager');
 }
 
@@ -20,7 +20,7 @@ Executor.prototype.execute = function(type, name, dir) {
   } else if (type == command.CHANGE_DIR) {
   	this.SnakeManager.changeDir(name, dir);
   } else if (type == command.GET_CURRENTDATA) {
-  	this.Initiator.sendCurrentData();
+  	this.initiator.sendCurrentData();
   } else if (type == command.CHECK_USERNAME) {
     if (!this.userNameManager.exist(name)) {
       this.userNameManager.add(name);

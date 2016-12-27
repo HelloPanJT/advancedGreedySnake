@@ -4,7 +4,6 @@ var directions = {"37": "left", "38": "up", "39": "right", "40": "down"};
 
 $(document).ready(function(){
   initChessBoard();
-  console.log('hello');
   bJoin();
   $("#userNameRow").hide();
   $("#sendMsgRow").hide();
@@ -23,15 +22,10 @@ $(document).ready(function(){
 	  sendMessage();
 	}
   });
-
-  $.post("/getLeaderBorder", {}, function(result){
-	console.log(result);
-  });
 });
 
 function bJoin() {
   $.post("/getCurBoard", {}, function(result) {
-    console.log(result);
   })
 }
 
@@ -39,7 +33,6 @@ $(document).keydown(function(event) {
   var key = event.keyCode;
   if (directions[key]) {
     $.post("/move", {"cmd": directions[key], "username": username}, function(result){
-	  //console.log('response received');
 	});
   }
 });
@@ -49,14 +42,6 @@ socket.on('clearstatus', function(data) {
 		$("#snakeLength").text("");
 		$('#snakeColor').html("");
 	}
-});
-
-socket.on('redrawhistorystatics', function(data) {
-  for (var i = 0; i < Math.min(data.length, 5); i++) {
-	$("#his"+(i+1)+"username").text(data[i].username);
-	$("#his"+(i+1)+"length").text(data[i].length);
-	$("#his"+(i+1)+"mininute").text(data[i].mininute);
-  }
 });
 
 socket.on('message', function(data) {
@@ -69,7 +54,7 @@ socket.on('redrawLeaderBorder',function(data){
 	$("#no"+(i+1)+"username").text("");
 	$("#no"+(i+1)+"length").text("");
   }
-  for (var i = 0;i < Math.min(data.length, 3); i++){
+  for (var i = 0; i < Math.min(data.length, 3); i++){
 	if (data[i].name == username){
 	  $("#snakeLength").text(data[i].length);
 	  paintSnake(data[i].color);
@@ -122,7 +107,6 @@ function scrollToBottom() {
 function setUsername() {
   if ($("#userNameText").val() != "") {
 	$.post("/setUsername", {"username": $("#userNameText").val()}, function(result){
-	  console.log(result);
 	  if (result) {
 		username = $("#userNameText").val();
 		$('#username').text(username);
@@ -149,11 +133,9 @@ function sendMessage() {
     var val = $('#msgText').val();
 	if (val === "play") {
 	  $.post("/play", {"username": username}, function(result){
-	    //console.log(result);
 	  });
 	} else {
 	  $.post("/message", {"username": username, "message": val}, function(result){
-	    //console.log(result);
 	  });
     }
     $('#msgText').val('');

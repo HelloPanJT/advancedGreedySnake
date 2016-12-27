@@ -27,10 +27,13 @@ ClientSnake.prototype.move = function(BoardManager) {
   var nextPos = this.snake.getNextPos(this.direction);
   if (!BoardManager.canMove(nextPos)) {
   	this.snake.status = 'die';
+    return 'die';
   } else if (BoardManager.canEat(nextPos)) {
   	this.eat(nextPos, BoardManager);
+    return 'eat';
   } else {
   	this.snake.changeBody(nextPos, 'move', BoardManager);
+    return 'move';
   }
 }
 

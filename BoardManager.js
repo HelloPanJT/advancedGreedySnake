@@ -21,6 +21,10 @@ var canMove = function(pos) {
   return true;
 }
 
+BoardManager.prototype.sendInfo = function(type, data) {
+  this.drawer.drawInfo(type, data);
+}
+
 BoardManager.prototype.sendCurrentData = function() {
   var foodData = UtilityInst.setToArray(this.foodGrids);
   this.drawer.draw(foodData, [], 'GOLD');
