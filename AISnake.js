@@ -20,7 +20,7 @@ var AIsnake = function(name, body, color, walkRoundNum, trackNum){
 	this.TRACK_NUM = trackNum;
 }
 
-AIsnake.prototype.walkWithSuggestPriority = function(BoardManager, priority){
+AIsnake.prototype.walkWithSuggestPriority = function(boardManager, priority){
   var head = Utility.getFirstElement(this.snake.body);
   for (var i = 0;i <= priority.length;i++){
   	var pos = {};
@@ -31,20 +31,24 @@ AIsnake.prototype.walkWithSuggestPriority = function(BoardManager, priority){
 
 	if (i == priority.length){
 	  this.snake.status = snakeStat.DIE;
-	} else if (BoardManager.canMove(pos) && !BoardManager.canEat(pos)){
-	  this.snake.changeBody(pos, bodyChanType.MOVE, BoardManager);
+	} else if (boardManager.canMove(pos) && !boardManager.canEat(pos)){
+	  this.snake.changeBody(pos, bodyChanType.MOVE, boardManager);
 	  break;
 	}
   }
 }
 
-AIsnake.prototype.walkWithoutTarget = function(BoardManager, commands) {
+AIsnake.prototype.getPrefSnakeName = function() {
+  return this.prefSnakeName;
+}
+
+AIsnake.prototype.walkWithoutTarget = function(boardManager, commands) {
   var start = Utility.getRandomInt(0, commands.length - 1);
   var next = start;
   while (true) {
     var nextPos = this.snake.getNextPos(commands[next]);
-    if (BoardManager.canMove(nextPos) && !BoardManager.canEat(nextPos)) {
-	  this.snake.changeBody(nextPos, bodyChanType.MOVE, BoardManager);
+    if (boardManager.canMove(nextPos) && !boardManager.canEat(nextPos)) {
+	  this.snake.changeBody(nextPos, bodyChanType.MOVE, boardManager);
 	  break;
     } else if ((next + 1) % commands.length == start) {
       this.snake.status = snakeStat.DIE;
@@ -54,7 +58,7 @@ AIsnake.prototype.walkWithoutTarget = function(BoardManager, commands) {
   }
 }
 
-AIsnake.prototype.trackWithTarget = function(BoardManager, csSnake){
+AIsnake.prototype.trackWithTarget = function(boardManager, csSnake){
   var aiHead = Utility.getFirstElement(this.snake.body);
   var prefHead = Utility.getFirstElement(csSnake.snake.body);
 			/*select the priority try sequence*/
@@ -70,18 +74,18 @@ AIsnake.prototype.trackWithTarget = function(BoardManager, csSnake){
   else {
 	priority = choicePriority.fourthQuadrant;
   }
-  this.walkWithSuggestPriority(BoardManager, priority);
+  this.walkWithSuggestPriority(boardManager, priority);
 }
 
 AIsnake.prototype.getStatus = function() {
   return this.snake.status;
 }
 
-AIsnake.prototype.nextAction = function(BoardManager, avaSnakeName, csSnakePool) {
+AIsnake.prototype.nextAction = function(boardManager, avaSnakeName, csSnakePool) {
   commands = Command.getAllCommand();
   if (this.prefSnakeName == constantSet.NONE) {
 	if (this.walkRoundNum < this.WALK_ROUND_NUM) {
-	  this.walkWithoutTarget(BoardManager, commands);
+	  this.walkWithoutTarget(boardManager, commands);
 	  this.walkRoundNum++;
 	} 
 	else {
@@ -90,12 +94,12 @@ AIsnake.prototype.nextAction = function(BoardManager, avaSnakeName, csSnakePool)
 	  	Utility.deleteElement(avaSnakeName, this.prefSnakeName);
 	  }
 	  if (this.prefSnakeName != constantSet.NONE && csSnakePool.hasOwnProperty(this.prefSnakeName)) {
-	    this.trackWithTarget(BoardManager, csSnakePool[this.prefSnakeName]);
+	    this.trackWithTarget(boardManager, csSnakePool[this.prefSnakeName]);
 	    this.trackNum++;
 	  } 
 	  else{
 	  	this.prefSnakeName = constantSet.NONE;
-		this.walkWithoutTarget(BoardManager, commands);
+		this.walkWithoutTarget(boardManager, commands);
 		if (this.walkRoundNum < this.WALK_ROUND_NUM) {
 		  this.walkRoundNum++;
 		}
@@ -105,7 +109,7 @@ AIsnake.prototype.nextAction = function(BoardManager, avaSnakeName, csSnakePool)
   else{
 	if (csSnakePool.hasOwnProperty(this.prefSnakeName)) {
 	  this.trackNum++;
-	  this.trackWithTarget(BoardManager, csSnakePool[this.prefSnakeName]);
+	  this.trackWithTarget(boardManager, csSnakePool[this.prefSnakeName]);
 	} else {
 	  this.prefSnakeName = constantSet.NONE;
 	  this.walkRoundNum = 0;

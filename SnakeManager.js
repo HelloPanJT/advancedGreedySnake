@@ -9,6 +9,7 @@ const snakeType = require('./SnakeType');
 const snakeStat = require('./SnakeStatus').SnakeStatus;
 const gridType = require('./GridType').GridType;
 const bodyChanType = require('./BodyChangeType').BodyChangeType;
+const constantSet = require('./ConstantSet').ConstantSet;
 var SnakeManager = function(BoardMangager, ColorProvider) {
   self = this;
   this.BoardMangager = BoardMangager;
@@ -77,6 +78,14 @@ SnakeManager.prototype.addSnake = function(type, name) {
   }
 }
 
+SnakeManager.prototype.deleteAvaName = function(name) {
+  Utility.deleteElement(this.avaSnakeName, name);
+}
+
+SnakeManager.prototype.addAvaName = function(name) {
+  this.avaSnakeName.push(name);
+}
+
 SnakeManager.prototype.provideInfo = function(type) {
   var data = packSnakeInfo(this.clientSnakePool);
   this.BoardMangager.sendInfo(type, data);
@@ -98,11 +107,16 @@ var packSnakeInfo = function(snakePool) {
 
 SnakeManager.prototype.killSnake = function(type, name) {
   if (type == snakeType.AI && this.AISnakePool.hasOwnProperty(name)) {
-  	var body = this.AISnakePool[name].snake.body;
+    var aiSnake = this.AISnakePool[name];
+  	var body = aiSnake.snake.body;
+    var prefName = aiSnake.getPrefSnakeName();
   	this.BoardMangager.removeBody(body, gridType.SNAKE);
     delete this.AISnakePool[name];
     this.curAISnakeNum--;
     this.addName(name);
+    if (prefName != constantSet.NONE && this.clientSnakePool.hasOwnProperty(prefName)) {
+      this.addAvaName(prefName);
+    }
   } else if (type == snakeType.CLIENT && this.clientSnakePool.hasOwnProperty(name)){
   	var body = this.clientSnakePool[name].snake.body;
     var color = this.clientSnakePool[name].snake.color;
@@ -110,6 +124,7 @@ SnakeManager.prototype.killSnake = function(type, name) {
   	delete this.clientSnakePool[name];
     this.ColorProvider.addOneColor(color);
     this.eraseClientInfo(name);
+    this.deleteAvaName(name);
     this.provideInfo(bodyChanType.KILL);
     this.curCliSnakeNum--;
   }

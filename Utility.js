@@ -43,7 +43,9 @@ Utility.prototype.eleToArray = function(ele) {
 }
 Utility.prototype.deleteElement = function(array, ele) {
   var index = array.indexOf(ele);
-  array.splice(index, 1);
+  if (index >=0 && index <array.length) {
+    array.splice(index, 1);
+  }
 }
 
 Utility.prototype.getLastElement = function(array) {
