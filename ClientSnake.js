@@ -32,7 +32,7 @@ ClientSnake.prototype.move = function(BoardManager) {
   	this.eat(nextPos, BoardManager);
     return bodyChanType.EAT;
   } else {
-  	this.snake.changeBody(nextPos, 'move', BoardManager);
+  	this.snake.changeBody(nextPos, bodyChanType.MOVE, BoardManager);
     return bodyChanType.MOVE;
   }
 }
