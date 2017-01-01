@@ -22,10 +22,10 @@ var SnakeManager = function(BoardMangager, ColorProvider) {
   this.curCliSnakeNum = 0;
   this.clientTick = setInterval(function() {
     self.moveClientSnake();
-  }, 500);
+  }, 400);
   this.AITick = setInterval(function() {
     self.moveAISnake();
-  }, 300);
+  }, 500);
   initAIName(this.avaAIName);
 }
 
