@@ -25,7 +25,7 @@ var SnakeManager = function(BoardMangager, ColorProvider) {
   }, 400);
   this.AITick = setInterval(function() {
     self.moveAISnake();
-  }, 500);
+  }, 100);
   initAIName(this.avaAIName);
 }
 
