@@ -11,7 +11,7 @@ const gridType = require('./GridType').GridType;
 const bodyChanType = require('./BodyChangeType').BodyChangeType;
 const constantSet = require('./ConstantSet').ConstantSet;
 var SnakeManager = function(BoardMangager, ColorProvider) {
-  self = this;
+  var self = this;
   this.BoardMangager = BoardMangager;
   this.ColorProvider = ColorProvider;
   this.clientSnakePool = {};
@@ -22,10 +22,10 @@ var SnakeManager = function(BoardMangager, ColorProvider) {
   this.curCliSnakeNum = 0;
   this.clientTick = setInterval(function() {
     self.moveClientSnake();
-  }, 400);
+  }, 300);
   this.AITick = setInterval(function() {
     self.moveAISnake();
-  }, 100);
+  }, 320);
   initAIName(this.avaAIName);
 }
 
