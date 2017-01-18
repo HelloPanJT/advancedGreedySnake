@@ -8,9 +8,9 @@ function ClientSnake(username, body, color) {
 	this.direction = command.DOWN;
 }
 
-ClientSnake.prototype.eat = function(pos, BoardManager) {
-  this.snake.changeBody(pos, bodyChanType.EAT, BoardManager);
-  BoardManager.generateFood();
+ClientSnake.prototype.eat = function(pos, boardManager) {
+  this.snake.changeBody(pos, bodyChanType.EAT, boardManager);
+  boardManager.generateFood();
 }
 
 ClientSnake.prototype.changeDir = function(direction) {
@@ -23,16 +23,16 @@ ClientSnake.prototype.getStatus = function() {
   return this.snake.status;
 }
 
-ClientSnake.prototype.move = function(BoardManager) {
+ClientSnake.prototype.move = function(boardManager) {
   var nextPos = this.snake.getNextPos(this.direction);
-  if (!BoardManager.canMove(nextPos)) {
+  if (!boardManager.canMove(nextPos)) {
   	this.snake.status = snakeStat.DIE;
     return snakeStat.DIE;
-  } else if (BoardManager.canEat(nextPos)) {
-  	this.eat(nextPos, BoardManager);
+  } else if (boardManager.canEat(nextPos)) {
+  	this.eat(nextPos, boardManager);
     return bodyChanType.EAT;
   } else {
-  	this.snake.changeBody(nextPos, bodyChanType.MOVE, BoardManager);
+  	this.snake.changeBody(nextPos, bodyChanType.MOVE, boardManager);
     return bodyChanType.MOVE;
   }
 }
